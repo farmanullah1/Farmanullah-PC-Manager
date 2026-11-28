@@ -5,6 +5,11 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 
 ## [Unreleased]
 
+### Changed
+- **Repository metadata R6 (prepared)**: prepared the owner-reviewed description and topic set for
+  `farmanullah1/FPM`. External repository metadata was not changed because owner authorization for
+  `gh repo edit` was not requested in this card.
+
 ### Added
 - **Documentation and real screenshots R5 (partial)**: replaced the outdated root README with
   current FPM features, safety model, build/release commands and project structure. Added original

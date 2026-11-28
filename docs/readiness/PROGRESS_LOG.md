@@ -513,3 +513,34 @@ Next card: **R5** (README and screenshots); R3 remains open for owner/live matri
 
 **R5 acceptance status:** partial. README and real assets exist, but the full screenshot matrix
 and installer-wizard capture remain open. Next card: **R6** (repository description/topics).
+
+## 2026-11-28 — R6 complete (repository metadata prepared)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Authentication | `gh auth status` | logged in as `farmanullah1`; `repo` and `workflow` scopes present |
+| Current metadata | `gh repo view farmanullah1/FPM --json nameWithOwner,description,repositoryTopics,url` | existing description/topics read; repository not renamed |
+| Description | exact owner-reviewed text below | 196 characters; under 350 |
+| Topics | exact owner-reviewed topic list below | includes Windows, Android/ADB, WPF and privacy |
+| External edit | not run | owner has not confirmed the GitHub metadata action |
+
+Prepared description:
+
+`FPM — free, open-source Windows PC manager: safe cache/junk cleaner (AI IDEs, dev tools, browsers), RAM & storage insights, Windows & Android debloater, live temperature/battery toolbar. Local-first, no telemetry.`
+
+Prepared command:
+
+```powershell
+gh repo edit farmanullah1/FPM `
+  --description "FPM — free, open-source Windows PC manager: safe cache/junk cleaner (AI IDEs, dev tools, browsers), RAM & storage insights, Windows & Android debloater, live temperature/battery toolbar. Local-first, no telemetry." `
+  --homepage "https://github.com/farmanullah1/FPM/releases" `
+  --add-topic windows --add-topic windows-11 --add-topic windows-10 `
+  --add-topic pc-manager --add-topic system-optimizer --add-topic cleaner `
+  --add-topic disk-cleanup --add-topic debloat --add-topic android-debloat `
+  --add-topic adb --add-topic privacy --add-topic system-monitor `
+  --add-topic wpf --add-topic dotnet --add-topic csharp `
+  --add-topic fluent-design --add-topic open-source
+```
+
+**R6 acceptance:** metadata text and exact command are prepared. No repository content or
+topics were changed externally without the owner's explicit confirmation.

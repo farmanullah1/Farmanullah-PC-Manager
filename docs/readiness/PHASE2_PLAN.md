@@ -93,7 +93,7 @@ memory overhead recorded in `BUILD_STATUS.md`.
 |---|---|---|---|
 | **R3** Installer | W6 everything | Inno Setup updates (tasks, AUMID, close running instances, uninstall data prompt, silent install, portable zip, signing hook, SHA256SUMS). **Partial 2026-11-28** — publish/installer/portable compile; live matrix pending. | Test matrix recorded in `BUILD_STATUS.md`. |
 | **R5** README + screenshots | R3 | Logo/banner, real Light/Dark screenshots of every screen, sections, safety model, credits, build commands. **Partial 2026-11-28** — README/assets and core screen captures; matrix/wizard pending. | No mockups; links valid; every claim true. |
-| **R6** Repo description/topics | R5 | Apply description/topics or print exact `gh` commands. | Description ≤ 350 chars; topics set. |
+| **R6** Repo description/topics | R5 | Apply description/topics or print exact `gh` commands. **Done 2026-11-28** — exact command prepared; external edit deferred. | Description ≤ 350 chars; topics set. |
 
 ## 9. v7-only backlog (not covered by FreeBuff cards)
 
