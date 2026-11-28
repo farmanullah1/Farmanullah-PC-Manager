@@ -44,6 +44,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.12 | A6 multi-user/device/wireless | 3–5 h | Private-IP wireless pairing/connect/disconnect, per-device/user state, health pre-check and no cross-device actions | ☑ 2026-11-28 — 339 tests, private-IP/serial guards, selected-device/user scope, honest unavailable unlock status, build 0/0, lint 367, contrast OK, Android NoDevice probe; no live phone |
 | 2.13 | A7 Android tests | 4–6 h | Recorded parsers, command/state safety, denylist, undo, snapshots, update/signature, parity and no real device | ☑ 2026-11-28 — 341 tests, 0/0 build, lint 367, contrast OK, IconGen 113, Android UIA probe, UAD parity and multi-device isolation tests |
 | 2.14 | R3 professional installer | 6–10 h | Self-contained publish, Inno tasks, close/uninstall, portable ZIP, optional signing and SHA-256; test matrix | ☐ PARTIAL 2026-11-28 — publish/portable/installer compile, 341 tests, graceful --exit; clean/silent/upgrade/uninstall/coexistence matrix not proven |
+| 2.15 | R5 README and screenshots | 4–8 h | Proper README, original logo/banner, real running-app captures and truthful gaps | ☐ PARTIAL 2026-11-28 — README/assets and Home/Storage/Memory/Debloat captures exist; installer wizard and full responsive/theme matrix remain unverified |
 
 ## Waves (details in `PHASE2_PLAN.md`)
 

@@ -5,6 +5,13 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 
 ## [Unreleased]
 
+### Added
+- **Documentation and real screenshots R5 (partial)**: replaced the outdated root README with
+  current FPM features, safety model, build/release commands and project structure. Added original
+  logo/social SVG and 512 px/1280 px PNG assets plus real running-app captures for Home
+  (Light/Dark), Storage, Memory and Windows/Android Debloat. The installer wizard and remaining
+  screen/theme matrix are not fabricated and remain unverified.
+
 ### Changed
 - **Professional installer R3 (partial)**: Inno Setup 6.7.3 now builds the canonical FPM AppId,
   administrator/x64 install layout, modern wizard, desktop/Start-menu shortcuts, start and

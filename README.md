@@ -1,175 +1,148 @@
-# FPM (Windows PC Manager)
+# <p align="center"><img src="docs/images/logo.svg" width="160" alt="FPM emblem"></p>
 
-A high-performance Windows 10/11 system utility built with **C# / .NET 8 / WPF (MVVM)**: live memory boost & diagnostics,
-consolidated Clean Everything & multi-tier disk cleanup, process & startup control, Windows Defender/Update protection, a toolbox and an always-on-top desktop quick bar.
+# FPM
 
-The application lives in [`app/`](app/) — see [`app/README.md`](app/README.md) for build
-details and the internals of every service.
+**A local-first Windows 10/11 PC manager for cleanup, memory, storage, protection and Android/Windows debloat.**
 
-## Tech stack
+<p align="left">
+  <a href="https://github.com/farmanullah1/FPM/releases"><img alt="Release" src="https://img.shields.io/github/v/release/farmanullah1/FPM"></a>
+  <a href="https://github.com/farmanullah1/FPM"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/farmanullah1/FPM/ci.yml?branch=main"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
+  <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4">
+  <img alt=".NET" src="https://img.shields.io/badge/.NET-8-512BD4">
+  <a href="CONTRIBUTING.md"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen"></a>
+</p>
 
-| Area | What the code actually uses |
-| --- | --- |
-| Runtime | .NET 8 (`net8.0` for the model project, `net8.0-windows` for the rest), C# 12, nullable reference types enabled |
-| UI framework | WPF only. The Fluent look is hand-written XAML — there is **no third-party UI framework package** in the solution |
-| Look and feel | `Styles/Themes/Light.xaml` and `Dark.xaml` declare the same brush keys and are swapped at index 0 of the merged dictionaries by `ThemeService`; `Styles/Controls.xaml` holds templated cards, buttons, toggle switch, slider and pills; `Styles/Icons.xaml` holds original 24×24 `Geometry` icons |
-| Windowing | Borderless shell with a custom title bar via `WindowChrome`; the floating toolbar is a transparent, topmost pill window |
-| MVVM | `CommunityToolkit.Mvvm` 8.3.2 — `ObservableObject`, `[ObservableProperty]`, `RelayCommand`, `AsyncRelayCommand` |
-| Composition | `Microsoft.Extensions.DependencyInjection` 8.0.1 with one registration point (`Services/DependencyInjection/ServiceCollectionExtensions.cs`); WPF-only services are registered in `App.xaml.cs` |
-| System access | Win32 P/Invoke (`Services/Interop/NativeMethods.cs`), WMI via `System.Management`, `Microsoft.Win32.Registry`, `ServiceController`, `System.Drawing.Common` for screen capture |
-| State | JSON settings and rolling logs under `%LOCALAPPDATA%\FPM`; `Core/AppInfo.cs` is the single source of identity, paths and protected process names (with automatic migration from legacy `%LOCALAPPDATA%\FarmanullahPCManager`) |
+## What is FPM
 
-`UseWindowsForms` is enabled in the shell project for one reason only — the tray
-`NotifyIcon`. Everything the user sees is WPF.
+FPM is a native C# / WPF application built around a **preview, approval, apply, verify, log and undo** safety model.
+It uses real system measurements and keeps local state under `%LOCALAPPDATA%\FPM`.
 
-## What shipped: six screens
+- Cleanup and quarantine: storage and cache scans, cleanup profiles, duplicate detection, and measured before/after reports
+- Memory: real physical, available and commit data plus graceful per-app memory relief
+- Protection: Defender status, Windows Update status, network checks, pop-up scanning and hosts-block controls
+- Apps and startup: process, Win32 and Store package views with confirmation before removal
+- Windows debloat: typed, OS-gated catalog actions through the elevated helper with preview and undo
+- Android debloat: signed ADB discovery, private-IP wireless pairing, typed package actions and snapshot/restore
+- Toolbar and sensors: dockable toolbar, battery and thermal readings when the platform exposes them
 
-### Home
-Hero card with live physical-memory usage (percent, used and total) and the current
-temporary-file size, a **Boost** button that trims process working sets and removes temp files
-older than 48 hours, and a **Smart Boost** switch that trims automatically once memory load
-crosses the saved threshold (at most once a minute). Four quick-action cards jump to
-Protection, Apps (processes), Storage (deep cleanup) and Apps (startup).
-
-### Protection
-Status banner driven by Defender real-time/antivirus state and Windows Update service state
-(restart-pending aware), with Defender signature version and the update status spelled out.
-Four tools: pop-up management (notifications settings), default browser detection (opens
-Default apps, since Windows blocks programmatic changes), taskbar repair (restarts Explorer)
-and restore default apps.
-
-### Storage
-System-drive usage bar, then the **Cleanup Center**: a read-only scan builds a numbered table of
-sixteen measured targets — Windows Update cache, user/Windows temp, Windows logs, error reports,
-shader caches, Prefetch, the installer patch cache (`$PatchCache$`), Recycle Bin, every detected
-Edge/Chrome/Brave profile and Firefox `cache2`, npm, NuGet, pip, Yarn, pnpm, and the detected
-caches of Antigravity, Freebuff, Cursor, VS Code and Windsurf. Every row shows its exact path,
-size, file count, age, tier and identity confidence. Nothing is deleted until an approval command
-(`proceed`, `only 1, 2`, `keep 1, 2`, ranges allowed) is reviewed and confirmed; a dry-run mode,
-a 15-minute plan expiry, a runtime safety guard, `cleanup_log.txt` and a measured before/after
-report sit behind that gate. Machine-wide rows (Windows temp/update/logs/Prefetch/`$PatchCache$`)
-run through a separate `requireAdministrator` helper on demand, with UAC only when the approved
-plan reaches them; a restore-point checkbox asks for a checkpoint before Caution/Opt-In plans.
-Every approved row is re-measured before deletion, so a folder that changed after the scan is
-skipped and must be reviewed again. Six profiles tick rows by family without approving anything.
-A **quarantine** checkbox moves eligible non-elevated files into the app's own data folder
-instead of deleting them; the manifest keeps the original path, size and SHA-256, the Storage
-page restores any entry once its original location is free (never overwriting), and Settings
-sets the retention and size cap. Completed runs are kept in `cleanup_history.json` and export
-as Markdown or CSV. **Manage large
-files** scans any folder with
-`> 10 MB / 50 MB / 100 MB / 500 MB / 1 GB` filters, **Duplicate files** groups identical files by
-size then **full SHA-256**, keeps the oldest copy and recycles the extras to the Recycle Bin after
-a confirmation and a fresh hash check (whitelisted and protected paths are refused; there is no
-permanent-delete path), and a **Storage Sense** switch reads and writes the Windows setting.
-
-### Apps
-**Process management** lists running user applications with CPU, RAM and a per-row End button
-(60 rows, largest first; this app and every `MSPCManager*` process are refused, as are
-session-0 processes). **Startup apps** reads Run/RunOnce keys, Startup folders and Task
-Scheduler, with working toggles through `StartupApproved`, `.lnk` renaming and
-`Enable/Disable-ScheduledTask`; built-in `\Microsoft\` tasks are shown read-only. **App
-management** lists installed Win32 apps from the HKLM/HKCU Uninstall keys with search,
-version, size and uninstall, then Store/MSIX packages from `Get-AppxPackage` with framework,
-system and Microsoft PC Manager packages hidden. Both uninstall buttons ask before acting;
-Store removal is current-user only and re-checks the exact package first. A desktop uninstall
-waits for the uninstaller, confirms the app left the registry, refreshes the list and reports
-any leftover install folder without deleting it.
-
-### Toolbox
-Floating-toolbar switch (always-on-top pill with live RAM, Boost, screenshot, notepad,
-calculator) plus a six-tool grid: screenshot of all monitors to a PNG in Pictures, screen
-recorder (Game Bar, falling back to Steps Recorder), calculator, notepad, DNS flush
-(`ipconfig /flushdns`) and quick web links.
-
-### Settings
-Start with Windows through this app's own `HKCU\...\Run` value, Smart Boost on/off with a
-50–95 % threshold slider and reset, a protected-paths manager that adds/removes whitelist
-entries, Light/Dark theme applied instantly, and an About block showing the data folder and
-today's log path with buttons to open them.
-
-## Architecture
-
-Five projects with a one-way dependency chain:
-
-```
-PCManager.Core            models, formatting, identity, helper protocol (no Windows UI)
-      ▲                         ▲
-PCManager.Services        PCManager.Helper
-system access, UI-free    elevated, fixed-command worker
-      ▲
-PCManager.ViewModels      page and shell view models
-      ▲
-PCManager                 WPF shell, styles, views  →  FarmanullahPCManager.exe
-```
-
-| Layer | Responsibility | Key files |
-| --- | --- | --- |
-| `Core` | Plain models, byte formatting and app identity (`ProductName`, data folder, Run value, protected process names) | `AppInfo.cs`, `Models/*.cs`, `Formatting/ByteFormatter.cs` |
-| `Services` | One interface per capability in `Abstractions/`, implementations grouped by feature (`Boost`, `Cleaners`, `Cleanup`, `Process`, `Storage`, `Protection`, `Toolbox`, `Settings`, `Startup`), shared helpers in `Infrastructure/` | `DependencyInjection/ServiceCollectionExtensions.cs`, `Cleanup/CleanupScanner.cs`, `Cleanup/SafetyGuard.cs`, `Process/StartupManager.cs` |
-| `Helper` | Separate `requireAdministrator` WinExe; one typed request over a current-user-only pipe, fixed targets only, no path from the client | `app/src/Helper/Program.cs`, `app/src/Helper/app.manifest` |
-| `Tests` | Parser, safety-guard and helper-contract tests | `app/tests/PCManager.Tests` |
-| `ViewModels` | Six page view models plus the shell; no Win32 calls, only `Services.Abstractions` | `MainViewModel.cs`, `HomeViewModel.cs`, `StorageViewModel.cs` |
-| `PCManager` | XAML views, themed styles, converters, DI composition root, tray icon, floating toolbar window | `App.xaml(.cs)`, `Views/*.xaml`, `Styles/*` |
-
-How a page is composed:
-
-1. `MainViewModel` owns the six page view models and exposes the rail (`Pages` plus the pinned
-   `SettingsItems`); `App.xaml` maps each view model to its view with a `DataTemplate`, so the
-   shell's `ContentControl` needs no code-behind switching.
-2. Pages never reference the shell: quick-action cards call `INavigationService`, whose
-   `NavigationService` broker forwards the page key to `MainViewModel`.
-3. A page talks only to interfaces (`IStorageService`, `ICleanupScanner`, `ICleanupExecutor`, …).
-   The implementations move enumeration, WMI and registry work onto the thread pool, so the
-   dispatcher stays responsive.
-4. Anything destructive goes through the approved-plan executor, `ISafetyGuard` and
-   `Infrastructure/SafeFileSystem`; each action returns the bytes actually released instead of
-   assuming success.
-
-## Quick start
-
-```powershell
-cd app
-dotnet build PCManager.sln
-dotnet test tests/PCManager.Tests/PCManager.Tests.csproj
-dotnet run --project src/PCManager/PCManager.csproj
-```
-
-The same executable exposes the cleanup engine from a terminal:
-
-```powershell
-FarmanullahPCManager.exe --scan                    # read-only, prints the numbered table
-FarmanullahPCManager.exe --clean --ids 1,2 --dry-run
-FarmanullahPCManager.exe --clean --ids 1,2 --restore-point
-FarmanullahPCManager.exe --clean --ids 1,2
-```
-
-Windows 10/11 with the .NET 8 SDK (`app/global.json` pins the feature band). The executable
-is `app/src/PCManager/bin/Debug/net8.0-windows/FarmanullahPCManager.exe`.
-
-## Side-by-side with Microsoft PC Manager
-
-Everything about the identity is distinct so both utilities can be installed at once:
-`FarmanullahPCManager.exe`, its own single-instance mutex, AppUserModelID, data folder
-(`%LOCALAPPDATA%\FarmanullahPCManager`) and Run value. No `mspcmanager://` or `pcmanager://`
-protocol is registered, and Boost / End Task never touch this process or any `MSPCManager*`
-process.
+FPM is not affiliated with, endorsed by, or supported by Microsoft or Google.
 
 ## Screenshots
 
-`app/screenshots/` contains a capture of each screen and of the floating toolbar. The Storage
-capture predates the Cleanup Center; the new table and approval gate have not been captured yet.
+Real application captures are stored in [`docs/images/`](docs/images/). Capture files are generated from the running app,
+not drawn mockups.
 
-## License & attribution
+| Home | Storage |
+|---|---|
+| <img src="docs/images/home-light.png" alt="FPM Home in Light theme" width="520"> | <img src="docs/images/storage-light.png" alt="FPM Storage in Light theme" width="520"> |
 
-FPM is **free software licensed under GPL-3.0-or-later**; the full text is in [`LICENSE`](LICENSE).
-Third-party notices (Win11Debloat's MIT catalogue notice, the Universal Android Debloater GPL
-reference, NuGet dependencies) are in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+| Debloat — Windows | Debloat — Android |
+|---|---|
+| <img src="docs/images/debloat-windows-light.png" alt="FPM Windows Debloat in Light theme" width="520"> | <img src="docs/images/debloat-android-light.png" alt="FPM Android Debloat in Light theme" width="520"> |
 
-All FPM branding, text and artwork are original to this project. No Microsoft or Google code,
-icons, text or other assets are redistributed.
+Additional captures: [`memory-light.png`](docs/images/memory-light.png),
+[`toolbar-docked.png`](docs/images/toolbar-docked.png), and [`home-dark.png`](docs/images/home-dark.png).
+Some platforms or devices intentionally show **Unavailable** instead of a fabricated value.
+The installer wizard and compact/mini mode have not yet been captured in a successful desktop
+install, so they are not shown here as real screenshots.
 
-**Use at your own risk.** FPM can delete files and change Windows settings; every destructive action
-is reviewed and confirmed first, but you are responsible for backups. FPM is **not affiliated with,
-endorsed by, or supported by Microsoft or Google**. Microsoft PC Manager and Windows are trademarks
-of Microsoft Corporation; Android is a trademark of Google LLC.
+## Download and install
+
+The installer is R3 work in progress. Release artifacts, when produced:
+
+- `FPM-Setup-x.y.z.exe` — x64 Inno Setup installer
+- `FPM-portable-x.y.z.zip` — portable build containing `portable.flag`
+- `SHA256SUMS.txt` — SHA-256 checksums
+
+```powershell
+FPM-Setup-x.y.z.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+FPM-Setup-x.y.z.exe /VERYSILENT /TASKS="desktopicon"
+```
+
+The installer and uninstall behavior are still being verified. Unsigned local builds may trigger
+SmartScreen. Do not install or run unverified artifacts from a third party.
+
+## Safety model
+
+1. **Scan** is read-only.
+2. **Review** shows the exact typed change and risk.
+3. **Approve** is explicit and destructive confirmations stay modal.
+4. **Apply** uses closed helper commands and validates every id/path.
+5. **Verify** re-reads state.
+6. **Log** records the result; snapshots or reinstall guidance support undo.
+
+FPM does not delete Microsoft PC Manager files, protected Windows processes or Android
+denylisted packages silently. Android package removal requires the user to acknowledge the
+warning and Unsafe packages require Expert mode plus exact package confirmation.
+
+## Build from source
+
+```powershell
+git clone https://github.com/farmanullah1/FPM.git
+cd FPM
+dotnet restore app/PCManager.sln
+dotnet build app/PCManager.sln -nodeReuse:false -m:1 --no-restore
+dotnet test app/tests/PCManager.Tests/PCManager.Tests.csproj --no-build -nodeReuse:false
+dotnet run --project app/src/PCManager/PCManager.csproj
+```
+
+Release packaging:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/build-release.ps1
+```
+
+## Project structure
+
+```text
+app/src/Core/       typed models and platform-independent logic
+app/src/Services/   system, cleanup, Android and sensor services
+app/src/ViewModels/ page and shell MVVM
+app/src/PCManager/  WPF shell and XAML
+app/src/Helper/     requireAdministrator typed helper
+app/tests/          xUnit safety and behavior tests
+tools/              lint, contrast, icon generation and UI probes
+docs/readiness/     card plan and verified progress
+installer/          Inno Setup script
+```
+
+## Privacy
+
+FPM has no telemetry and no account requirement. Settings, logs, snapshots and cleanup evidence
+stay under `%LOCALAPPDATA%\FPM`. Android action logs hash the device serial rather than storing
+the raw serial.
+
+## Windows and Android debloat
+
+Windows debloat is a typed catalog port of Win11Debloat behavior, not an executed copy of the
+PowerShell script. Every action has detect/apply/revert behavior where the underlying Windows
+state is journalable.
+
+Android debloat uses a typed UAD package catalog and ADB command surface. Enable USB debugging
+on the phone, unlock it and accept the USB authorization prompt. FPM can offer the official
+Google platform-tools download, but it never downloads or uses a tool until the Android SDK
+license is accepted and the archive and `adb.exe` pass checksum/signature checks.
+
+## Troubleshooting
+
+- **SmartScreen:** verify the SHA-256 checksum and use a signed installer when available.
+- **ADB missing:** set an adb path or accept the pinned Google platform-tools download.
+- **No sensor value:** FPM reports `Unavailable` with a reason; no live reading is invented.
+- **UAC prompt:** decline or close it to leave the operation unchanged.
+- **Portable mode:** release packaging includes `portable.flag`; user data and settings still
+  follow the app's documented per-user data folder unless the implementation says otherwise.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). Reports and fixes should preserve the safety rules,
+include focused tests and provide fresh build/test evidence.
+
+## License and attribution
+
+FPM is licensed **GPL-3.0-or-later**. Win11Debloat attribution and the Universal Android
+Debloater GPL reference are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+All FPM branding and artwork are original. No Microsoft or Google code, icons or branding are
+redistributed. Windows and Microsoft PC Manager are trademarks of Microsoft Corporation.
+Android is a trademark of Google LLC.

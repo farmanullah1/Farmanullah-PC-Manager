@@ -500,3 +500,16 @@ compile; the named-pipe shutdown path is verified. Installer discovery and silen
 behavior is not marked green until a machine run creates the expected install and registry entries.
 
 Next card: **R5** (README and screenshots); R3 remains open for owner/live matrix verification.
+
+## 2026-11-28 — R5 partial (README and screenshots)
+
+| Step | Evidence | Result |
+|---|---|---|
+| README | root README replaced with current features, safety, build, privacy and attribution sections | no stale executable/name examples |
+| Logo/banner | `docs/images/logo.svg`, `logo.png`, `banner.svg`, `banner.png` | original FPM geometry; 512 px and 1280×640 |
+| Captures | PrintWindow/UIA from running FPM: Home Light/Dark, Storage, Memory, Windows Debloat, Android Debloat | real app windows; settings restored |
+| Toolbar | real existing floating-toolbar capture copied to `docs/images/toolbar-docked.png` | under 300 KB |
+| Gaps | installer wizard, compact/mini mode, complete three-width/two-theme matrix | not fabricated; recorded |
+
+**R5 acceptance status:** partial. README and real assets exist, but the full screenshot matrix
+and installer-wizard capture remain open. Next card: **R6** (repository description/topics).

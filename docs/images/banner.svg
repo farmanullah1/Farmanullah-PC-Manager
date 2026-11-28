@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <rect width="1280" height="640" fill="#121214"/>
+  <g transform="translate(96 144) scale(14.4)">
+    <path d="M12,1.4 L12,12 L4,7.2 Z M22.6,12 L12,12 L17,5.2 Z M12,22.6 L12,12 L20,16.8 Z M1.4,12 L12,12 L7,18.8 Z"
+          fill="#FACC15"/>
+    <path d="M12,9.4 L14.6,12 L12,14.6 L9.4,12 Z" fill="#F9FAFB"/>
+  </g>
+  <text x="590" y="290" fill="#F9FAFB" font-family="Segoe UI,Arial" font-size="112" font-weight="700">FPM</text>
+  <text x="590" y="360" fill="#C8C5BE" font-family="Segoe UI,Arial" font-size="34">Windows &amp; Android cleanup and debloat</text>
+  <text x="590" y="420" fill="#FACC15" font-family="Segoe UI,Arial" font-size="28">Local-first. Safety reviewed. Undo where available.</text>
+</svg>
