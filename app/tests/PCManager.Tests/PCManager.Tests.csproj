@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\src\Core\PCManager.Core.csproj" />
     <ProjectReference Include="..\..\src\Services\PCManager.Services.csproj" />
     <ProjectReference Include="..\..\src\ViewModels\PCManager.ViewModels.csproj" />
+    <ProjectReference Include="..\..\src\PCManager\PCManager.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,11 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Spacing and localization U10 (partial)**: reduced Settings XAML token violations from 31 to 24,
+  ratcheted the lint baseline to 360, and added English/Urdu `.resx` resources with startup culture
+  and RTL handling. 360/560/1280 live rendering and complete UI translation remain open.
+
+### Changed
 - **Scrolling and navigation U9 (partial)**: the shell now has Back/Forward title controls,
   Alt+Left/Right and mouse Back/Forward navigation, Ctrl+1–7 and Ctrl+, page shortcuts, F5 refresh,
   per-page scroll offset restoration, a Back-to-top button after 600 px, and inertial wheel easing

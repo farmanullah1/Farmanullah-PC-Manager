@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PCManager.Core;
 using PCManager.Services.Abstractions;
 using PCManager.ViewModels;
+using PCManager.Localization;
 using PCManager.Views;
 
 namespace PCManager;
@@ -29,6 +30,9 @@ public partial class App
         {
             ISettingsService settings = services.GetRequiredService<ISettingsService>();
             IThemeService theme = services.GetRequiredService<IThemeService>();
+
+            LocalizedStrings localization =
+                AppLocalization.Apply(settings.Current.Language);
 
             // The splash must already use the user's palette.
             theme.Apply(settings.Current.Theme);
@@ -62,6 +66,10 @@ public partial class App
             await Dispatcher.Yield(DispatcherPriority.Background);
 
             var window = services.GetRequiredService<MainWindow>();
+            window.FlowDirection =
+                localization.RightToLeft
+                    ? FlowDirection.RightToLeft
+                    : FlowDirection.LeftToRight;
             MainWindow = window;
 
             _splash?.SetStage("Ready", 100);

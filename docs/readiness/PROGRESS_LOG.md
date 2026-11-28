@@ -575,6 +575,22 @@ tested; live nested-scroll and focus-restoration verification remains open.
 
 Next card: **U10** (padding and localization foundation).
 
+## 2026-11-28 — U10 partial (spacing audit and localization foundation)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Spacing | Settings literals reduced 31 → 24; baseline ratchet 367 → 360 | lint green |
+| Audit | `docs/dev/UI_SPACING_AUDIT.md` | token rules and remaining coverage recorded |
+| Resources | `PCManager.Properties.Strings.resx` + Urdu satellite | English and Urdu navigation keys |
+| Startup | `AppLocalization.Apply` sets culture and `MainWindow.FlowDirection` sets RTL | foundation runtime-wired |
+| Tests/gates | localization tests, full suite, build, lint, contrast, IconGen | 347 tests; 0/0; lint 360; contrast OK; icons up to date |
+| Not captured | live 360/560/1280 page widths, complete Urdu translation/RTL and every XAML string keyed | not claimed |
+
+**U10 acceptance status:** partial. XAML spacing moved toward tokens and localization culture/RTL
+foundation is implemented; full responsive and complete localization acceptance remains open.
+
+Next card: **U11** (existing-feature improvement sweep).
+
 ## 2026-11-28 — U8 partial (real-state motion)
 
 | Step | Evidence | Result |
