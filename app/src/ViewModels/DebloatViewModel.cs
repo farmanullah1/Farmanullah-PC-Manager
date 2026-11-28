@@ -380,12 +380,12 @@ public sealed partial class DebloatViewModel : ViewModelBase
         IEnumerable<DebloatApp> apps = _allApps;
 
         if (SelectedAppFilter switch
-            {
-                "Recommended safe" => "safe",
-                "Optional" => "optional",
-                "Unsafe" => "unsafe",
-                _ => null,
-            } is { } recommendation)
+        {
+            "Recommended safe" => "safe",
+            "Optional" => "optional",
+            "Unsafe" => "unsafe",
+            _ => null,
+        } is { } recommendation)
         {
             apps = apps.Where(app => app.Recommendation == recommendation);
         }

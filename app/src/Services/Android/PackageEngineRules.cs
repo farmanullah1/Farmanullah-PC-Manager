@@ -75,13 +75,13 @@ internal static class PackageEngineRules
         string packageId,
         PackageAction action,
         int userId) => action switch
-    {
-        PackageAction.Uninstall => AdbCommand.UninstallPackage(device.Serial, packageId, userId),
-        PackageAction.Disable => AdbCommand.DisablePackage(device.Serial, packageId, userId),
-        PackageAction.Restore => AdbCommand.RestorePackage(device.Serial, packageId, userId),
-        PackageAction.Enable => AdbCommand.EnablePackage(device.Serial, packageId, userId),
-        _ => throw new ArgumentOutOfRangeException(nameof(action), "Unsupported package action."),
-    };
+        {
+            PackageAction.Uninstall => AdbCommand.UninstallPackage(device.Serial, packageId, userId),
+            PackageAction.Disable => AdbCommand.DisablePackage(device.Serial, packageId, userId),
+            PackageAction.Restore => AdbCommand.RestorePackage(device.Serial, packageId, userId),
+            PackageAction.Enable => AdbCommand.EnablePackage(device.Serial, packageId, userId),
+            _ => throw new ArgumentOutOfRangeException(nameof(action), "Unsupported package action."),
+        };
 
     public static PackageActionResult Result(
         PackageActionRequest request,

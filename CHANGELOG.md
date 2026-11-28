@@ -6,6 +6,13 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Application cleanup U12 (partial)**: ran the solution package inventory and verified formatting
+  across the solution. `dotnet format --verify-no-changes` found and applied 16 whitespace-only
+  fixes in three Android/debloat/window source files. Package references remain unchanged because
+  the package inventory showed no clearly unused package to remove safely. Full dead-code, duplicate
+  style/converter and obsolete-screen cleanup remains open.
+
+### Changed
 - **Existing-feature sweep U11 (partial)**: process management now has real name search, Memory/CPU/Name
   sorting, a visible-row collection and recycling virtualization. Three focused tests cover filtering,
   sorting and empty search behavior. The broader Home/Health/Startup/Storage/Settings/Tray sweep remains open.

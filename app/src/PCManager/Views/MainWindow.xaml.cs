@@ -223,9 +223,9 @@ public partial class MainWindow : FpmWindow
     }
 
     /// <summary>
-        /// Builds every page view at idle time, one per dispatcher turn, so the first visit to a
-        /// page does not pay the whole construction cost inside its transition.
-        /// </summary>
+    /// Builds every page view at idle time, one per dispatcher turn, so the first visit to a
+    /// page does not pay the whole construction cost inside its transition.
+    /// </summary>
     public void PrewarmPages()
     {
         List<ViewModelBase> pages = _viewModel.Pages
