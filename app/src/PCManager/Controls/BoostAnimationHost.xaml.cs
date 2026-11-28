@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -36,6 +37,10 @@ public partial class BoostAnimationHost : UserControl
     public static readonly DependencyProperty IsCompactProperty = DependencyProperty.Register(
         nameof(IsCompact), typeof(bool), typeof(BoostAnimationHost),
         new PropertyMetadata(false, OnCompactChanged));
+
+    public static readonly DependencyProperty CancelCommandProperty = DependencyProperty.Register(
+        nameof(CancelCommand), typeof(ICommand), typeof(BoostAnimationHost),
+        new PropertyMetadata(null, OnCancelCommandChanged));
 
     private readonly TranslateTransform _rocketShift = new();
     private readonly ScaleTransform _flameScale = new(1, 1);
@@ -84,6 +89,12 @@ public partial class BoostAnimationHost : UserControl
         set => SetValue(IsCompactProperty, value);
     }
 
+    public ICommand? CancelCommand
+    {
+        get => (ICommand?)GetValue(CancelCommandProperty);
+        set => SetValue(CancelCommandProperty, value);
+    }
+
     private static void OnPhaseChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
         ((BoostAnimationHost)d).ApplyPhase((BoostPhase)e.NewValue);
 
@@ -114,6 +125,12 @@ public partial class BoostAnimationHost : UserControl
         host.LayoutTransform = new ScaleTransform(scale, scale);
     }
 
+    private static void OnCancelCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var host = (BoostAnimationHost)d;
+        host.CancelButton.Command = (ICommand?)e.NewValue;
+    }
+
     private void ApplyPhase(BoostPhase phase)
     {
         StopAnimations();
@@ -123,29 +140,34 @@ public partial class BoostAnimationHost : UserControl
             case BoostPhase.Idle:
                 Flame.Visibility = Visibility.Collapsed;
                 Chip.Visibility = Visibility.Collapsed;
+                CancelButton.Visibility = Visibility.Collapsed;
                 break;
 
             case BoostPhase.Measuring:
                 Flame.Visibility = Visibility.Collapsed;
                 Chip.Visibility = Visibility.Collapsed;
+                CancelButton.Visibility = Visibility.Visible;
                 Pulse();
                 break;
 
             case BoostPhase.Working:
                 Flame.Visibility = Visibility.Visible;
                 Chip.Visibility = Visibility.Collapsed;
+                CancelButton.Visibility = Visibility.Visible;
                 Fly();
                 break;
 
             case BoostPhase.Completed:
                 Flame.Visibility = Visibility.Collapsed;
                 Chip.Visibility = Visibility.Visible;
+                CancelButton.Visibility = Visibility.Collapsed;
                 StartCountUp();
                 break;
 
             case BoostPhase.Failed:
                 Flame.Visibility = Visibility.Collapsed;
                 Chip.Visibility = Visibility.Visible;
+                CancelButton.Visibility = Visibility.Collapsed;
 
                 if (MotionKit.Policy.AllowsTransforms)
                 {

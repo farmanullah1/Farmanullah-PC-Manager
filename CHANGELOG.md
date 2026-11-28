@@ -6,6 +6,12 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Boost animation U7 (partial)**: the shared Boost host now exposes Cancel while
+  Measuring/Working, both Home and the toolbar bind the same cancel command, and the coordinator
+  supports cancellation plus a 2-second return from Completed to Idle. Reduced-motion ring/check
+  behavior and failure/cancel UI remain to be captured live.
+
+### Changed
 - **Repository metadata R6 (prepared)**: prepared the owner-reviewed description and topic set for
   `farmanullah1/FPM`. External repository metadata was not changed because owner authorization for
   `gh repo edit` was not requested in this card.

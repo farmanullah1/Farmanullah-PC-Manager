@@ -80,6 +80,9 @@ public sealed partial class HomeViewModel : ViewModelBase, IDisposable
         _logger = logger;
 
         BoostCommand = new AsyncRelayCommand(BoostAsync, () => !IsBusy);
+        CancelBoostCommand = new RelayCommand(
+            () => _boostCoordinator.Cancel(),
+            () => _boostCoordinator.IsBusy);
         CaptureCommand = new AsyncRelayCommand(CaptureAsync, () => !IsBusy);
         CleanEverythingCommand = new RelayCommand(() => _navigation.Navigate(PageKeys.Storage));
         OpenProtectionCommand = new RelayCommand(() => _navigation.Navigate(PageKeys.Protection));
@@ -117,6 +120,7 @@ public sealed partial class HomeViewModel : ViewModelBase, IDisposable
     public TemperatureStatusViewModel Temperature { get; }
 
     public AsyncRelayCommand BoostCommand { get; }
+    public RelayCommand CancelBoostCommand { get; }
     public AsyncRelayCommand CaptureCommand { get; }
     public RelayCommand CleanEverythingCommand { get; }
     public RelayCommand OpenProtectionCommand { get; }
@@ -212,6 +216,7 @@ public sealed partial class HomeViewModel : ViewModelBase, IDisposable
     protected override void OnBusyChanged()
     {
         BoostCommand.NotifyCanExecuteChanged();
+        CancelBoostCommand.NotifyCanExecuteChanged();
         CaptureCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(BoostButtonText));
     }
@@ -426,6 +431,7 @@ public sealed partial class HomeViewModel : ViewModelBase, IDisposable
             OnPropertyChanged(nameof(BoostHeadline));
             OnPropertyChanged(nameof(BoostResultText));
             OnPropertyChanged(nameof(BoostFreedBytes));
+            CancelBoostCommand.NotifyCanExecuteChanged();
         }
 
         if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())

@@ -544,3 +544,17 @@ gh repo edit farmanullah1/FPM `
 
 **R6 acceptance:** metadata text and exact command are prepared. No repository content or
 topics were changed externally without the owner's explicit confirmation.
+
+## 2026-11-28 — U7 partial (Boost cancellation and state settlement)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Shared coordinator | `BoostCoordinator.RunAsync` links caller cancellation to an owned CTS; `Cancel()` cancels only an active run | cancellation test passed |
+| Shared UI | `BoostAnimationHost` exposes Cancel in Measuring/Working and is bound from Home and floating toolbar | 0/0 build |
+| Settlement | Completed schedules a 2 s return to Idle; cancellation sets Idle immediately | settlement test passed |
+| Tests | focused Boost suite | 8 Boost tests passed |
+| Full suite/gates | solution test, lint, contrast, IconGen | 343 passed; lint 367; contrast OK; icons up to date |
+| Not captured | reduced-motion live run, failure/cancel visuals and the 2 s settle in UI | not claimed |
+
+**U7 acceptance status:** partial. Cancel, settle and state behavior are implemented and tested;
+live reduced-motion/failure/cancel captures remain open.

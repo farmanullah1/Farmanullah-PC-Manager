@@ -127,4 +127,30 @@ public sealed class BoostCoordinatorTests
         Assert.Contains(BoostPhase.Working, phases);
         Assert.Equal(BoostPhase.Completed, phases[^1]);
     }
+
+    [Fact]
+    public async Task CancelStopsAnActiveRunAndRemainsHonest()
+    {
+        var boost = new FakeBoost();
+        var coordinator = new BoostCoordinator(boost, new TestLogger());
+
+        Task run = coordinator.RunAsync(BoostTrigger.Manual);
+        coordinator.Cancel();
+        await run;
+
+        Assert.Equal(BoostPhase.Idle, coordinator.Phase);
+        Assert.Equal("Boost cancelled.", coordinator.Headline);
+    }
+
+    [Fact]
+    public async Task CompletedResultReturnsToIdleAfterSettlement()
+    {
+        var coordinator = new BoostCoordinator(new FakeBoost(), new TestLogger());
+
+        await coordinator.RunAsync(BoostTrigger.Automatic);
+        Assert.Equal(BoostPhase.Completed, coordinator.Phase);
+
+        await Task.Delay(TimeSpan.FromMilliseconds(2100));
+        Assert.Equal(BoostPhase.Idle, coordinator.Phase);
+    }
 }

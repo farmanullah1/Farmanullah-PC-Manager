@@ -145,6 +145,7 @@
                                                  Headline="{Binding BoostHeadline}"
                                                  ResultText="{Binding BoostResultText}"
                                                  FreedBytes="{Binding BoostFreedBytes}"
+                                                 CancelCommand="{Binding CancelBoostCommand}"
                                                  AutomationProperties.Name="Boost progress" />
 
                     <!-- T1: the same shared battery reading as the toolbar and Settings. -->

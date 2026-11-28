@@ -46,6 +46,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.14 | R3 professional installer | 6–10 h | Self-contained publish, Inno tasks, close/uninstall, portable ZIP, optional signing and SHA-256; test matrix | ☐ PARTIAL 2026-11-28 — publish/portable/installer compile, 341 tests, graceful --exit; clean/silent/upgrade/uninstall/coexistence matrix not proven |
 | 2.15 | R5 README and screenshots | 4–8 h | Proper README, original logo/banner, real running-app captures and truthful gaps | ☐ PARTIAL 2026-11-28 — README/assets and Home/Storage/Memory/Debloat captures exist; installer wizard and full responsive/theme matrix remain unverified |
 | 2.16 | R6 repository description/topics | 0.5 h | Description ≤350 chars and exact topics prepared or applied | ☑ 2026-11-28 — auth verified, metadata read, exact `gh repo edit` command prepared; external edit deferred |
+| 2.17 | U7 shared Boost animation | 3–5 h | Shared state host, cancel, 2 s settlement, Reduced Motion and live visual capture | ☐ PARTIAL 2026-11-28 — cancel/CTS/settle implemented; 343 tests, 8 Boost tests; live Reduced/Failure/Cancel captures not run |
 
 ## Waves (details in `PHASE2_PLAN.md`)
 

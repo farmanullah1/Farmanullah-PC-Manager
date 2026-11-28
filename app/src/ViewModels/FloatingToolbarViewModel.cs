@@ -37,6 +37,9 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
         Temperature = temperature;
 
         BoostCommand = new AsyncRelayCommand(() => _boostCoordinator.RunAsync(BoostTrigger.Manual));
+        CancelBoostCommand = new RelayCommand(
+            () => _boostCoordinator.Cancel(),
+            () => _boostCoordinator.IsBusy);
         ScreenshotCommand = new AsyncRelayCommand(() => RunToolAsync("screenshot"));
         NotepadCommand = new AsyncRelayCommand(() => RunToolAsync("notepad"));
         CalculatorCommand = new AsyncRelayCommand(() => RunToolAsync("calculator"));
@@ -59,6 +62,7 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
     public TemperatureStatusViewModel Temperature { get; }
 
     public AsyncRelayCommand BoostCommand { get; }
+    public RelayCommand CancelBoostCommand { get; }
     public AsyncRelayCommand ScreenshotCommand { get; }
     public AsyncRelayCommand NotepadCommand { get; }
     public AsyncRelayCommand CalculatorCommand { get; }
@@ -132,6 +136,7 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
             OnPropertyChanged(nameof(BoostHeadline));
             OnPropertyChanged(nameof(BoostResultText));
             OnPropertyChanged(nameof(BoostFreedBytes));
+            CancelBoostCommand.NotifyCanExecuteChanged();
         }
 
         if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())

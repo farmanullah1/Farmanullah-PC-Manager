@@ -14,6 +14,7 @@ public sealed class BoostCoordinator
     private readonly IPcBoostService _boost;
     private readonly IAppLogger _logger;
     private readonly object _gate = new();
+    private CancellationTokenSource? _runCancellation;
 
     public BoostCoordinator(IPcBoostService boost, IAppLogger logger)
     {
@@ -35,6 +36,19 @@ public sealed class BoostCoordinator
 
     public bool IsBusy => BoostPolicy.IsBusy(Phase);
 
+    public void Cancel()
+    {
+        lock (_gate)
+        {
+            if (!IsBusy)
+            {
+                return;
+            }
+
+            _runCancellation?.Cancel();
+        }
+    }
+
     /// <summary>Runs one Boost. A second press while busy is ignored rather than queued.</summary>
     public async Task RunAsync(BoostTrigger trigger, CancellationToken cancellationToken = default)
     {
@@ -45,22 +59,24 @@ public sealed class BoostCoordinator
                 return;
             }
 
+            _runCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             SetPhase(BoostPhase.Measuring, "Measuring memory…");
         }
 
+        CancellationToken runToken = _runCancellation!.Token;
         try
         {
             MemorySnapshot before = _boost.GetMemorySnapshot();
             SetPhase(BoostPhase.Working, "Trimming process working sets…");
 
-            MemoryTrimResult trim = await _boost.OptimizeAsync(cancellationToken).ConfigureAwait(false);
+            MemoryTrimResult trim = await _boost.OptimizeAsync(runToken).ConfigureAwait(false);
             long freed = 0;
 
             // The shared rule: only an explicit Boost press may delete temporary files.
             if (BoostPolicy.AllowsTempCleanup(trigger))
             {
                 SetPhase(BoostPhase.Working, "Releasing temporary files…");
-                freed = await _boost.CleanTempFilesAsync(cancellationToken).ConfigureAwait(false);
+                freed = await _boost.CleanTempFilesAsync(runToken).ConfigureAwait(false);
             }
 
             LastResult = trim;
@@ -68,6 +84,7 @@ public sealed class BoostCoordinator
             ResultText =
                 $"{trim.WorkingSetsTrimmed} working sets · {ByteFormatter.Format(freed)} temp removed";
             SetPhase(BoostPhase.Completed, Describe(trim, freed));
+            _ = ReturnToIdleAfterResultAsync();
 
             _logger.Info(
                 $"Boost ({trigger}): {trim.WorkingSetsTrimmed} working sets trimmed, available " +
@@ -81,6 +98,27 @@ public sealed class BoostCoordinator
         {
             SetPhase(BoostPhase.Failed, $"Boost failed: {ex.Message}");
             _logger.Error("Boost failed.", ex);
+        }
+        finally
+        {
+            lock (_gate)
+            {
+                _runCancellation?.Dispose();
+                _runCancellation = null;
+            }
+        }
+    }
+
+    private async Task ReturnToIdleAfterResultAsync()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+
+        lock (_gate)
+        {
+            if (Phase == BoostPhase.Completed)
+            {
+                SetPhase(BoostPhase.Idle, "Ready");
+            }
         }
     }
 

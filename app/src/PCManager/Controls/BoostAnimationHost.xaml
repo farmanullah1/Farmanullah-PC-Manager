@@ -26,6 +26,13 @@
             <TextBlock x:Name="HeadlineText" FontSize="10.5"
                        Foreground="{DynamicResource App.Subtle}"
                        TextTrimming="CharacterEllipsis" />
+            <Button x:Name="CancelButton"
+                    Content="Cancel"
+                    Style="{StaticResource PillButton}"
+                    HorizontalAlignment="Left"
+                    Margin="{StaticResource Thickness.1}"
+                    Visibility="Collapsed"
+                    AutomationProperties.Name="Cancel Boost" />
             <Border x:Name="Chip"
                     Visibility="Collapsed"
                     HorizontalAlignment="Left"
