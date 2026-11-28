@@ -214,6 +214,35 @@ public sealed class PackageEngineTests
     }
 
     [Fact]
+    public async Task Separate_devices_keep_actions_on_their_requested_serial()
+    {
+        var executor = new QueueAdbExecutor(
+            Packages("com.example.app"),
+            Packages("com.example.app"),
+            Packages(),
+            Packages("com.example.app"),
+            Packages("com.example.app"),
+            Packages("com.example.app"),
+            Packages(),
+            Packages("com.example.app"));
+        PackageEngine engine = Engine(executor);
+
+        await engine.ApplyAsync(
+            Device(),
+            0,
+            new[] { new PackageActionRequest("com.example.app", PackageAction.Disable) });
+        await engine.ApplyAsync(
+            Device("SERIAL456"),
+            10,
+            new[] { new PackageActionRequest("com.example.app", PackageAction.Disable) });
+
+        Assert.All(executor.Devices.Take(4), device => Assert.Equal("SERIAL123", device.Serial));
+        Assert.All(executor.Devices.Skip(4), device => Assert.Equal("SERIAL456", device.Serial));
+        Assert.All(executor.Commands, command =>
+            Assert.Contains(command.Serial, new[] { "SERIAL123", "SERIAL456" }));
+    }
+
+    [Fact]
     public async Task Dependency_warnings_are_reported_without_changing_the_batch()
     {
         UadPackageEntry app = new(
@@ -252,8 +281,8 @@ public sealed class PackageEngineTests
     private static PackageEngine Engine(QueueAdbExecutor executor, UadListCatalog? catalog = null) =>
         new(new FakePackageListProvider(catalog ?? Catalog()), executor, new FakeLogger());
 
-    private static AdbDevice Device() => new(
-        "SERIAL123",
+    private static AdbDevice Device(string serial = "SERIAL123") => new(
+        serial,
         AdbDeviceState.Device,
         "device",
         "Test Phone",
@@ -291,12 +320,14 @@ public sealed class PackageEngineTests
         private readonly Queue<AdbProcessResult> _results = new(results);
 
         public List<AdbCommand> Commands { get; } = new();
+        public List<AdbDevice> Devices { get; } = new();
 
         public Task<AdbProcessResult> ExecuteAsync(
             AdbDevice device,
             AdbCommand command,
             CancellationToken cancellationToken = default)
         {
+            Devices.Add(device);
             Commands.Add(command);
             return Task.FromResult(_results.Count > 0
                 ? _results.Dequeue()

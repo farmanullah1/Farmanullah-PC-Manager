@@ -461,3 +461,23 @@ honest unavailable unlock evidence. No cross-device apply path or live phone mut
 **Not checked:** no live pairing, wireless connection, device unlock or low-battery ADB run was exercised.
 
 Next card: **A7** (Android tests).
+
+## 2026-11-28 — A7 complete (Android tests)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Command/parser/state coverage | existing recorded-output parser, typed command, package scan/state and batch suites cover devices, users, getprop, package ids/users, continue/failure/disconnect, denylist and verification | no real device |
+| Snapshot/selection/signature coverage | backup/snapshot, text/JSON selection, update/list schema, consent/checksum/Google-signature and unsigned-adb suites use temp paths/fakes | no personal data or live download |
+| Device isolation | `PackageEngineTests.Separate_devices_keep_actions_on_their_requested_serial` records the serial for every command in two selected-device runs | no cross-device request |
+| Reference parity | `AndroidParityTests.Feature_map_has_no_unimplemented_reference_features` reads `docs/dev/uad-feature-map.md` and rejects `not started` rows | UAD feature map closed |
+| Tests/build/gates/UI | full solution build and test suite; lint; contrast; IconGen; Android UIA probe | 0/0 build; **341 passed**; lint 367; contrast OK; 113 icons; probe exit 0 |
+
+**A7 acceptance:** the Android test suite covers command rejection, recorded parsers, state
+computation, denylist/Expert confirmation, batch behavior, undo/restore, snapshots, list validation,
+selection round-trips, download consent/signature checks and reference parity. All mutations and
+network/signature cases use fakes or disposable files.
+
+**Not checked:** no live phone, real wireless pairing, package mutation, official live download or
+physical low-battery/unlocked-device pre-check was exercised.
+
+Next card: **R3** (professional installer).

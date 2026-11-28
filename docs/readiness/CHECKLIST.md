@@ -42,6 +42,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.10 | A2 package lists | 3–5 h | Typed model + schema/validator for `uad_lists.json`; user-initiated update with diff/hash; embedded fallback | ☑ 2026-11-28 — `e33b5cb`; 302 tests (15 A2), embedded 2,400/2,394/6 + SHA-256, fake-source update/cache/diff, build 0/0, lint 367, contrast OK, IconGen 113; probe read embedded counts; no live upstream fetch (R-44) |
 | 2.11 | A3 package engine | 4–6 h | State computation, typed commands, batch results, verify, dependency warnings; command builder rejects injection; continue on failure | ☑ 2026-11-28 — `3946e1d` + `0c50c62`; 321 tests (19 A3), fake-state/mutation tests, build 0/0, lint 367, contrast OK, IconGen 113, A2-tab probe exit 0; no live device or package mutation (R-47) |
 | 2.12 | A6 multi-user/device/wireless | 3–5 h | Private-IP wireless pairing/connect/disconnect, per-device/user state, health pre-check and no cross-device actions | ☑ 2026-11-28 — 339 tests, private-IP/serial guards, selected-device/user scope, honest unavailable unlock status, build 0/0, lint 367, contrast OK, Android NoDevice probe; no live phone |
+| 2.13 | A7 Android tests | 4–6 h | Recorded parsers, command/state safety, denylist, undo, snapshots, update/signature, parity and no real device | ☑ 2026-11-28 — 341 tests, 0/0 build, lint 367, contrast OK, IconGen 113, Android UIA probe, UAD parity and multi-device isolation tests |
 
 ## Waves (details in `PHASE2_PLAN.md`)
 

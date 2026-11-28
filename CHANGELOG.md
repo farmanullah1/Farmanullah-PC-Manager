@@ -6,6 +6,13 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Added
+- **Android test completion (A7)**: the Android suite now includes recorded-device parser fixtures,
+  typed-command rejection, state/scanning and batch behavior, denylist and Expert confirmation,
+  snapshot/restore, selection round-trips, signed/unsigned platform-tools, private-IP wireless
+  checks and multi-device serial isolation. A reference-feature parity test prevents UAD feature
+  rows from remaining marked unimplemented. No real phone or package mutation is used.
+
+### Added
 - **Android multi-user, multi-device and wireless controls (A6)**: the Android tab now keeps device
   and work-profile selectors, connects each package selection to the selected device/user, exposes
   private-IP-only ADB pairing and connection commands, and disconnects only wireless selections.

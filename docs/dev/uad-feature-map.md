@@ -36,18 +36,18 @@ ids**. The parser reports and normalizes duplicates last-wins, matching the refe
 | Embedded package list and schema | `resources/assets/uad_lists.json`, `src/core/uad_lists.rs` | `Core/Android/UadList*`, `Services/Android/PackageListProvider.cs`; **A2** | done |
 | Remote list update, cache and fallback | `src/core/uad_lists.rs` (`load_debloat_lists`, `get_local_lists`) | A2 `IUadListSource`, `IPackageListProvider`; embedded fallback | done (network only on user action) |
 | Lists: GFAM/AOSP/OEM/carrier/misc | same JSON, `list` field | `UadListKind`; **A2** data, **A4** filters | data done |
-| Package state detection | `src/core/sync.rs`, `src/core/utils.rs` | **A3** package engine | not started |
-| Uninstall/disable/restore/enable | `src/core/sync.rs`, `src/gui/widgets/package_row.rs` | **A3** typed actions; **A4** review | not started |
-| Multi-user/work profile | `src/core/sync.rs`, `src/gui/views/list.rs` | **A3/A6** user selection and `--user` actions | not started |
-| Multi-device support | `src/gui/views/list.rs` | **A1** discovery; **A6** per-device state | discovery done |
-| Export/import selection (`uad_exported_selection.txt`) | `src/core/save.rs` | **A5** export/import plus FPM JSON | not started |
-| Action log | `src/core/save.rs` | **A5** append-only `android_actions.log` | not started |
+| Package state detection | `src/core/sync.rs`, `src/core/utils.rs` | **A3** package engine | done |
+| Uninstall/disable/restore/enable | `src/core/sync.rs`, `src/gui/widgets/package_row.rs` | **A3** typed actions; **A4** review | done |
+| Multi-user/work profile | `src/core/sync.rs`, `src/gui/views/list.rs` | **A3/A6** user selection and `--user` actions | done |
+| Multi-device support | `src/gui/views/list.rs` | **A1** discovery; **A6** per-device state | done |
+| Export/import selection (`uad_exported_selection.txt`) | `src/core/save.rs` | **A5** export/import plus FPM JSON | done |
+| Action log | `src/core/save.rs` | **A5** append-only `android_actions.log` | done |
 | Dependency and needed-by metadata | `dependencies`, `neededBy` in JSON | **A3** warning path; retained by A2 | data done |
-| Wireless debugging/pairing | UAD README/ADB workflow; not in the old GUI | **A6** `adb pair`/`connect` helper | not started |
-| Pre-apply snapshot/restore | UAD relies on package reinstall; FPM improvement | **A5** snapshot and inverse actions | not started |
+| Wireless debugging/pairing | UAD README/ADB workflow; not in the old GUI | **A6** `adb pair`/`connect` helper | done |
+| Pre-apply snapshot/restore | UAD relies on package reinstall; FPM improvement | **A5** snapshot and inverse actions | done |
 | Chinese OEM AOSP-name caveat | upstream README lines 160–162 | **A2** warning text; **A4** first-run guidance | visible in A2 |
 | Platform-tools setup/signature gate | upstream README setup | **A1** locator/consent/Authenticode | done |
-| Bootloop/factory-reset warning and protected packages | upstream README/FAQ, `removal: Unsafe` | **A4/A7** denylist, Expert confirmation and warnings | not started |
+| Bootloop/factory-reset warning and protected packages | upstream README/FAQ, `removal: Unsafe` | **A4/A7** denylist, Expert confirmation and warnings | done |
 | Package list update diff/hash | FPM improvement (not in this reference snapshot) | **A2** `UadListDiff` and SHA-256 sidecar | done |
 
 ## Deliberate differences
