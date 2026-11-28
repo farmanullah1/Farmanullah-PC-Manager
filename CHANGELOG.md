@@ -6,6 +6,12 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Toolbox customization T3 (partial)**: added `toolbox.layout.json` persistence with a typed nine-item
+  default layout, enable/disable and move controls, reset, and export/import. The Toolbox editor
+  and toolbar visibility are wired to the shared layout service. Live toolbar reorder and a real
+  app-driven layout probe remain unverified.
+
+### Changed
 - **Application cleanup U12**: package inventory and analyzer verification found no unambiguous unused
   package or dead-code/stub marker to remove safely. `dotnet format` verification and whitespace
   cleanup are green; build, tests and static gates remain unchanged.

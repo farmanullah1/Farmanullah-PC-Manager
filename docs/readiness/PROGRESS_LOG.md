@@ -638,3 +638,19 @@ Next card: **W1** (FpmWindow base chrome).
 card-specific visual matrix remains open for later runtime work.
 
 Next card: **U9** (scrolling and navigation).
+
+## 2026-11-28 — T3 partial (toolbox layout customization)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Layout model | `ToolboxLayoutEntry`, `ToolboxLayoutFile`, `IToolboxLayoutService` | typed 9-entry catalog |
+| Persistence | `ToolboxLayoutService` writes `%LOCALAPPDATA%\FPM\toolbox.layout.json` atomically | reset/move/enable/import/export |
+| Editor | Toolbox page has enable, move up/down, reset, export/import controls | UI wired |
+| Toolbar | Floating-toolbar ViewModel reads enabled layout and hides fixed metrics/tools; layout change raises notifications | immediate enablement wiring |
+| Tests/gates | `ToolboxLayoutTests`, full suite, build, lint, contrast, IconGen | 354 tests; 0/0; lint 360; contrast OK; icons up to date |
+| Not verified | live drag/reorder reflection, actual toolbar-only restart and Home live card | not claimed |
+
+**T3 acceptance status:** partial. Layout persistence, editor, enablement and import/export are
+implemented and unit-tested; live reorder/toolbar-only/Home reflection remains open.
+
+Next card: **T4** (Memory icon and polish).

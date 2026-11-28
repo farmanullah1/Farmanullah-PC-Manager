@@ -40,6 +40,72 @@
                 </Grid>
             </Border>
 
+            <!-- T3: persisted toolbox/widget layout -->
+            <Border Style="{StaticResource Card}" Padding="{StaticResource Card.Padding}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <controls:Icon3D Key="Toolbox" Size="24" Margin="{StaticResource Thickness.1}" />
+                        <TextBlock Text="Widgets &amp; tools" FontSize="17" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Text="Choose and reorder the metrics/tools shown by the floating toolbar."
+                               Style="{StaticResource CaptionText}" TextWrapping="Wrap"
+                               Margin="{StaticResource Thickness.2}" />
+
+                    <ItemsControl ItemsSource="{Binding LayoutItems}"
+                                  AutomationProperties.Name="Toolbox layout">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource RowCard}"
+                                        Padding="{StaticResource Row.Padding}"
+                                        Margin="{StaticResource Row.Margin}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox IsChecked="{Binding Enabled, Mode=TwoWay}"
+                                                  Command="{Binding DataContext.ToggleLayoutCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                  CommandParameter="{Binding}"
+                                                  VerticalAlignment="Center"
+                                                  AutomationProperties.Name="{Binding Title}" />
+                                        <controls:Icon3D Grid.Column="1" Key="{Binding Icon3DKey}" Size="20"
+                                                         Margin="{StaticResource Thickness.2}" />
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Status}" Style="{StaticResource CaptionText}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <Button Grid.Column="3" Content="&#x25B2;" Style="{StaticResource PillButton}"
+                                                Command="{Binding DataContext.MoveLayoutUpCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding Id}"
+                                                AutomationProperties.Name="{Binding Title, StringFormat='Move {0} up'}"
+                                                Margin="{StaticResource Thickness.1}" />
+                                        <Button Grid.Column="4" Content="&#x25BC;" Style="{StaticResource PillButton}"
+                                                Command="{Binding DataContext.MoveLayoutDownCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding Id}"
+                                                AutomationProperties.Name="{Binding Title, StringFormat='Move {0} down'}"
+                                                Margin="{StaticResource Thickness.1}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Orientation="Horizontal" Margin="{StaticResource Thickness.2}">
+                        <Button Content="Reset layout" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ResetLayoutCommand}" />
+                        <Button Content="Export layout" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ExportLayoutCommand}" Margin="{StaticResource Thickness.2}" />
+                        <Button Content="Import layout" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ImportLayoutCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
             <TextBlock Text="Tools" Style="{StaticResource SectionTitle}" Margin="0,6,0,10" />
 
             <ItemsControl ItemsSource="{Binding Tools}">

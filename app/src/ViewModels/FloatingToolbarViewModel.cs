@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PCManager.Core.Formatting;
@@ -19,6 +20,7 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
     private readonly BoostCoordinator _boostCoordinator;
     private readonly IToolboxService _toolbox;
     private readonly INetworkThroughputService _network;
+    private readonly IToolboxLayoutService _layout;
     private readonly DispatcherTimer _timer;
 
     public FloatingToolbarViewModel(
@@ -27,12 +29,14 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
         IToolboxService toolbox,
         INetworkThroughputService network,
         BatteryStatusViewModel battery,
-        TemperatureStatusViewModel temperature)
+        TemperatureStatusViewModel temperature,
+        IToolboxLayoutService layout)
     {
         _boost = boost;
         _boostCoordinator = boostCoordinator;
         _toolbox = toolbox;
         _network = network;
+        _layout = layout;
         Battery = battery;
         Temperature = temperature;
 
@@ -46,6 +50,22 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
         TaskManagerCommand = new AsyncRelayCommand(() => RunToolAsync("taskmgr"));
         ToggleDrawerCommand = new RelayCommand(() => IsDrawerOpen = !IsDrawerOpen);
         OpenFpmCommand = new RelayCommand(OpenFpm);
+        LaunchLayoutToolCommand = new AsyncRelayCommand<string>(async id =>
+        {
+            if (string.Equals(id, "tool_quick_links", StringComparison.OrdinalIgnoreCase))
+            {
+                await RunToolAsync("quick-links");
+            }
+            else if (!string.IsNullOrEmpty(id))
+            {
+                string toolId = id.StartsWith("tool_", StringComparison.OrdinalIgnoreCase)
+                    ? id["tool_".Length..].Replace('_', '-')
+                    : id;
+                await RunToolAsync(toolId);
+            }
+        });
+        _layout.Changed += OnLayoutChanged;
+        RefreshLayout();
 
         _boostCoordinator.Changed += OnBoostChanged;
         Refresh();
@@ -69,6 +89,52 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
     public AsyncRelayCommand TaskManagerCommand { get; }
     public RelayCommand ToggleDrawerCommand { get; }
     public RelayCommand OpenFpmCommand { get; }
+    public AsyncRelayCommand<string> LaunchLayoutToolCommand { get; }
+    public ObservableCollection<ToolboxLayoutEntry> ToolbarLayout { get; } = new();
+    public bool RamEnabled => IsLayoutEnabled("metric_ram");
+    public bool BatteryEnabled => IsLayoutEnabled("metric_battery");
+    public bool TemperatureEnabled => IsLayoutEnabled("metric_temperature");
+    public bool BoostEnabled => IsLayoutEnabled("action_boost");
+    public bool ScreenshotEnabled => IsLayoutEnabled("tool_screenshot");
+    public bool NotepadEnabled => IsLayoutEnabled("tool_notepad");
+    public bool CalculatorEnabled => IsLayoutEnabled("tool_calculator");
+    public bool TaskManagerEnabled => IsLayoutEnabled("tool_taskmgr");
+    public bool QuickLinksEnabled => IsLayoutEnabled("tool_quick_links");
+
+    private bool IsLayoutEnabled(string id) =>
+        _layout.Layout.Any(entry =>
+            string.Equals(entry.Id, id, StringComparison.OrdinalIgnoreCase) &&
+            entry.Enabled);
+
+    private void OnLayoutChanged(object? sender, EventArgs e)
+    {
+        if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())
+        {
+            dispatcher.Invoke(RefreshLayout);
+            return;
+        }
+
+        RefreshLayout();
+    }
+
+    private void RefreshLayout()
+    {
+        ToolbarLayout.Clear();
+        foreach (ToolboxLayoutEntry entry in _layout.Layout)
+        {
+            ToolbarLayout.Add(entry);
+        }
+
+        OnPropertyChanged(nameof(RamEnabled));
+        OnPropertyChanged(nameof(BatteryEnabled));
+        OnPropertyChanged(nameof(TemperatureEnabled));
+        OnPropertyChanged(nameof(BoostEnabled));
+        OnPropertyChanged(nameof(ScreenshotEnabled));
+        OnPropertyChanged(nameof(NotepadEnabled));
+        OnPropertyChanged(nameof(CalculatorEnabled));
+        OnPropertyChanged(nameof(TaskManagerEnabled));
+        OnPropertyChanged(nameof(QuickLinksEnabled));
+    }
 
     [ObservableProperty]
     private string _loadText = "-";
@@ -173,5 +239,6 @@ public sealed partial class FloatingToolbarViewModel : ObservableObject, IDispos
     {
         _timer.Stop();
         _boostCoordinator.Changed -= OnBoostChanged;
+        _layout.Changed -= OnLayoutChanged;
     }
 }

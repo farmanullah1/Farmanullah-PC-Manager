@@ -129,6 +129,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IProcessService, ProcessService>();
         services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IToolboxService, ToolboxService>();
+        services.AddSingleton<IToolboxLayoutService, ToolboxLayoutService>();
         services.AddSingleton<IProtectionService, ProtectionService>();
 
         return services;

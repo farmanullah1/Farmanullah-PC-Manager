@@ -52,6 +52,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.20 | U10 spacing and localization foundation | 4–6 h | Page spacing audit, token pass, `.resx` foundation, English/Urdu RTL and 360/560/1280 review | ☐ PARTIAL 2026-11-28 — Settings 31→24, baseline 367→360, English/Urdu resources and startup RTL hook; live widths/complete UI translation remain unverified |
 | 2.21 | U11 existing-feature sweep | 6–10 h | Improve named existing features with real data, tests and honest gaps | ☐ PARTIAL 2026-11-28 — Apps process search/sort/virtualization plus 3 tests; broader feature sweep remains open |
 | 2.22 | U12 app cleanup | 4–6 h | Remove dead code, duplicate styles/resources/packages, format, warnings and docs refresh | ☑ 2026-11-28 — package inventory, TODO/HACK/stub scan, analyzer and format verification, 16 whitespace fixes, 350-test gate |
+| 2.23 | T3 toolbox layout | 3–5 h | Layout editor/persistence, toolbar and optional Home wiring, reset/export/import | ☐ PARTIAL 2026-11-28 — typed 9-entry layout, editor, enablement, move/reset/export/import, 354 tests; live reorder/toolbar-only/Home not verified |
 
 ## Waves (details in `PHASE2_PLAN.md`)
 

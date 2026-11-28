@@ -59,7 +59,8 @@
                                          AutomationProperties.Name="FPM emblem" />
                     </Button>
 
-                    <StackPanel Orientation="Horizontal" Margin="6,0,0,0" VerticalAlignment="Center"
+                    <StackPanel Visibility="{Binding RamEnabled, Converter={StaticResource BoolToVisibility}}"
+                                Orientation="Horizontal" Margin="6,0,0,0" VerticalAlignment="Center"
                                 ToolTip="{Binding FreeText}">
                         <controls:Icon3D Key="Memory" Size="18" Margin="{StaticResource Thickness.1}" />
                         <StackPanel VerticalAlignment="Center">
@@ -70,12 +71,15 @@
                     </StackPanel>
 
                     <!-- T1: the shared battery tile; hides itself when Windows reports no battery. -->
-                    <controls:BatteryTile IsCompact="True" DataContext="{Binding Battery}"
+                    <controls:BatteryTile Visibility="{Binding BatteryEnabled, Converter={StaticResource BoolToVisibility}}"
+                                          IsCompact="True" DataContext="{Binding Battery}"
                                          Margin="{StaticResource Thickness.2}" />
-                    <controls:TemperatureTile IsCompact="True" DataContext="{Binding Temperature}"
+                    <controls:TemperatureTile Visibility="{Binding TemperatureEnabled, Converter={StaticResource BoolToVisibility}}"
+                                              IsCompact="True" DataContext="{Binding Temperature}"
                                               Margin="{StaticResource Thickness.2}" />
 
-                    <Button Style="{StaticResource PillButton}" Margin="8,0,0,0" Height="24"
+                    <Button Visibility="{Binding BoostEnabled, Converter={StaticResource BoolToVisibility}}"
+                            Style="{StaticResource PillButton}" Margin="8,0,0,0" Height="24"
                             FontSize="11"
                             Command="{Binding BoostCommand}" ToolTip="Release temporary files"
                             AutomationProperties.Name="Boost">
@@ -130,32 +134,45 @@
                         Margin="0,8,0,0" Padding="0,6,0,0"
                         BorderBrush="{DynamicResource App.Border}" BorderThickness="0,1,0,0">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
+                        <Button Visibility="{Binding ScreenshotEnabled, Converter={StaticResource BoolToVisibility}}"
+                                Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
                                 FontSize="11" Command="{Binding ScreenshotCommand}" ToolTip="Take full screenshot">
                             <StackPanel Orientation="Horizontal">
                                 <controls:Icon3D Key="Screenshot" Size="12" Margin="{StaticResource Thickness.1}" />
                                 <TextBlock Text="Shot" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
+                        <Button Visibility="{Binding NotepadEnabled, Converter={StaticResource BoolToVisibility}}"
+                                Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
                                 FontSize="11" Command="{Binding NotepadCommand}" ToolTip="Open Notepad">
                             <StackPanel Orientation="Horizontal">
                                 <controls:Icon3D Key="Notepad" Size="12" Margin="{StaticResource Thickness.1}" />
                                 <TextBlock Text="Note" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
+                        <Button Visibility="{Binding CalculatorEnabled, Converter={StaticResource BoolToVisibility}}"
+                                Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
                                 FontSize="11" Command="{Binding CalculatorCommand}" ToolTip="Open Calculator">
                             <StackPanel Orientation="Horizontal">
                                 <controls:Icon3D Key="Calculator" Size="12" Margin="{StaticResource Thickness.1}" />
                                 <TextBlock Text="Calc" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
+                        <Button Visibility="{Binding TaskManagerEnabled, Converter={StaticResource BoolToVisibility}}"
+                                Style="{StaticResource PillButton}" Margin="{StaticResource Thickness.1}" Height="24"
                                 FontSize="11" Command="{Binding TaskManagerCommand}" ToolTip="Open Task Manager">
                             <StackPanel Orientation="Horizontal">
                                 <controls:Icon3D Key="ProcessList" Size="12" Margin="{StaticResource Thickness.1}" />
                                 <TextBlock Text="Task" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Visibility="{Binding QuickLinksEnabled, Converter={StaticResource BoolToVisibility}}"
+                                Style="{StaticResource PillButton}" Height="24"
+                                FontSize="11" Command="{Binding LaunchLayoutToolCommand}"
+                                CommandParameter="tool_quick_links" ToolTip="Open quick web links">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:Icon3D Key="QuickLinks" Size="12" Margin="{StaticResource Thickness.1}" />
+                                <TextBlock Text="Links" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource PillButton}" Height="24"

@@ -9,6 +9,29 @@ public sealed class ToolboxTool
     public string Icon3DKey { get; set; } = string.Empty;
 }
 
+public sealed class ToolboxLayoutEntry
+{
+    public string Id { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Icon3DKey { get; set; } = string.Empty;
+    public bool Enabled { get; set; } = true;
+    public ToolboxLayoutKind Kind { get; set; } = ToolboxLayoutKind.Tool;
+    public string Status { get; set; } = string.Empty;
+}
+
+public enum ToolboxLayoutKind
+{
+    Metric,
+    Action,
+    Tool,
+}
+
+public sealed class ToolboxLayoutFile
+{
+    public int Version { get; set; } = 1;
+    public List<ToolboxLayoutEntry> Entries { get; set; } = new();
+}
+
 /// <summary>The browser Windows currently uses for http/https links.</summary>
 public sealed class DefaultBrowserSetting
 {
