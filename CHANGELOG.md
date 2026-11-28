@@ -6,6 +6,11 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Existing-feature sweep U11 (partial)**: process management now has real name search, Memory/CPU/Name
+  sorting, a visible-row collection and recycling virtualization. Three focused tests cover filtering,
+  sorting and empty search behavior. The broader Home/Health/Startup/Storage/Settings/Tray sweep remains open.
+
+### Changed
 - **Spacing and localization U10 (partial)**: reduced Settings XAML token violations from 31 to 24,
   ratcheted the lint baseline to 360, and added English/Urdu `.resx` resources with startup culture
   and RTL handling. 360/560/1280 live rendering and complete UI translation remain open.

@@ -591,6 +591,22 @@ foundation is implemented; full responsive and complete localization acceptance 
 
 Next card: **U11** (existing-feature improvement sweep).
 
+## 2026-11-28 — U11 partial (process management improvement)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Process search | `AppsViewModel.ProcessSearch` filters `VisibleRunningApps` case-insensitively | real measured process names |
+| Process sort | Memory, CPU and Name options use process data | no fake rows |
+| Virtualization | `AppsView.xaml` uses `VirtualizingStackPanel` Recycling mode | process list stays virtualized |
+| Tests | `AppsViewModelTests` | 3 focused tests passed |
+| Build/full gates | solution build, full suite, lint, contrast, IconGen, UIA probe | 0/0; 350 tests; lint 360; contrast OK; icons up to date; Android probe passed |
+| Not swept | live Health/Startup/Storage/Settings/Tray/Error improvements outside this batch | not claimed |
+
+**U11 acceptance status:** partial. Process search/sort/virtualization is complete and tested;
+the broader existing-feature table remains open.
+
+Next card: **U12** (app cleanup).
+
 ## 2026-11-28 — U8 partial (real-state motion)
 
 | Step | Evidence | Result |

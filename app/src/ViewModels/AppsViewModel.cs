@@ -96,6 +96,7 @@ public sealed partial class AppsViewModel : ViewModelBase, IDisposable
 
     private IReadOnlyList<InstalledApp> _allInstalled = Array.Empty<InstalledApp>();
     private IReadOnlyList<AppxPackage> _allStore = Array.Empty<AppxPackage>();
+    private IReadOnlyList<RunningAppViewModel> _allRunning = Array.Empty<RunningAppViewModel>();
     private bool _refreshing;
 
     public AppsViewModel(
@@ -133,10 +134,13 @@ public sealed partial class AppsViewModel : ViewModelBase, IDisposable
     }
 
     public ObservableCollection<RunningAppViewModel> RunningApps { get; } = new();
+    public ObservableCollection<RunningAppViewModel> VisibleRunningApps { get; } = new();
     public ObservableCollection<StartupAppViewModel> StartupApps { get; } = new();
     public ObservableCollection<InstalledAppViewModel> InstalledApps { get; } = new();
     public ObservableCollection<StoreAppViewModel> StoreApps { get; } = new();
     public ObservableCollection<AppLeftoverItem> LeftoverItems { get; } = new();
+    public ObservableCollection<string> ProcessSortOptions { get; } =
+        new(new[] { "Memory", "CPU", "Name" });
 
     public AsyncRelayCommand RefreshCommand { get; }
     public AsyncRelayCommand RefreshStartupCommand { get; }
@@ -146,6 +150,12 @@ public sealed partial class AppsViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty]
     private string _appSearch = string.Empty;
+
+    [ObservableProperty]
+    private string _processSearch = string.Empty;
+
+    [ObservableProperty]
+    private string _processSort = "Memory";
 
     [ObservableProperty]
     private string _installedSummary = "Reading installed applications...";
@@ -174,6 +184,9 @@ public sealed partial class AppsViewModel : ViewModelBase, IDisposable
         ApplyStoreFilter();
     }
 
+    partial void OnProcessSearchChanged(string value) => ApplyProcessFilter();
+    partial void OnProcessSortChanged(string value) => ApplyProcessFilter();
+
     public override async Task LoadAsync()
     {
         await RefreshProcessesAsync();
@@ -189,6 +202,42 @@ public sealed partial class AppsViewModel : ViewModelBase, IDisposable
         ScanLeftoversCommand.NotifyCanExecuteChanged();
         CleanLeftoversCommand.NotifyCanExecuteChanged();
         ExportRegBackupCommand.NotifyCanExecuteChanged();
+    }
+
+    public static IReadOnlyList<RunningAppViewModel> FilterAndSortProcesses(
+        IEnumerable<RunningAppViewModel> apps,
+        string? search,
+        string? sort)
+    {
+        IEnumerable<RunningAppViewModel> filtered = apps;
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            filtered = filtered.Where(app =>
+                app.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        filtered = sort switch
+        {
+            "CPU" => filtered.OrderByDescending(app => app.Process.CpuPercent)
+                             .ThenBy(app => app.Name, StringComparer.OrdinalIgnoreCase),
+            "Name" => filtered.OrderBy(app => app.Name, StringComparer.OrdinalIgnoreCase),
+            _ => filtered.OrderByDescending(app => app.Process.MemoryBytes)
+                          .ThenBy(app => app.Name, StringComparer.OrdinalIgnoreCase),
+        };
+
+        return filtered.Take(MaxRows).ToArray();
+    }
+
+    private void ApplyProcessFilter()
+    {
+        VisibleRunningApps.Clear();
+        foreach (RunningAppViewModel app in FilterAndSortProcesses(
+                     _allRunning,
+                     ProcessSearch,
+                     ProcessSort))
+        {
+            VisibleRunningApps.Add(app);
+        }
     }
 
     private async Task RefreshProcessesAsync()
@@ -211,11 +260,18 @@ public sealed partial class AppsViewModel : ViewModelBase, IDisposable
                 .Take(MaxRows)
                 .ToList();
 
-            RunningApps.Clear();
+            var running = new List<RunningAppViewModel>();
             foreach (ProcessInfo process in apps)
             {
-                RunningApps.Add(new RunningAppViewModel(process, EndAsync));
+                running.Add(new RunningAppViewModel(process, EndAsync));
             }
+            _allRunning = running;
+            RunningApps.Clear();
+            foreach (RunningAppViewModel app in running)
+            {
+                RunningApps.Add(app);
+            }
+            ApplyProcessFilter();
 
             ProcessSummary = $"{apps.Count} applications · {apps.Sum(a => a.MemoryBytes) / (1024.0 * 1024.0 * 1024.0):0.00} GB in use";
         }
