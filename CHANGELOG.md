@@ -6,6 +6,11 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Memory polish T4 (partial)**: the Memory page now eases the real load progress and staggers
+  the first 12 measured process rows. Existing `Icon3D.Memory` surfaces in the header, Home,
+  tray and toolbar remain unchanged. No memory-cleaner or relief behavior changed.
+
+### Changed
 - **Memory polish T4 (partial)**: the Memory page already uses `Icon3D.Memory`; T4 now eases the real
   load progress bar and staggers the first 12 measured process rows without changing memory/relief
   rules. Live gauge/process captures and Home/tray/toolbar icon matrix remain to be captured.
