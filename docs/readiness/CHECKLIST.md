@@ -51,7 +51,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.19 | U9 scrolling and navigation | 3–5 h | Smooth wheel/keyboard, overlay scrollbar/back-to-top, history, shortcuts, scroll memory and focus | ☐ PARTIAL 2026-11-28 — history/shortcuts/scroll memory/back-to-top/wheel easing implemented; 345 tests; live nested-wheel/focus/offset retention remain unverified |
 | 2.20 | U10 spacing and localization foundation | 4–6 h | Page spacing audit, token pass, `.resx` foundation, English/Urdu RTL and 360/560/1280 review | ☐ PARTIAL 2026-11-28 — Settings 31→24, baseline 367→360, English/Urdu resources and startup RTL hook; live widths/complete UI translation remain unverified |
 | 2.21 | U11 existing-feature sweep | 6–10 h | Improve named existing features with real data, tests and honest gaps | ☐ PARTIAL 2026-11-28 — Apps process search/sort/virtualization plus 3 tests; broader feature sweep remains open |
-| 2.22 | U12 app cleanup | 4–6 h | Remove dead code, duplicate styles/resources/packages, format, warnings and docs refresh | ☐ PARTIAL 2026-11-28 — package inventory, 16 whitespace fixes, formatter verification and 350-test gate; dead-code/obsolete-screen sweep remains open |
+| 2.22 | U12 app cleanup | 4–6 h | Remove dead code, duplicate styles/resources/packages, format, warnings and docs refresh | ☑ 2026-11-28 — package inventory, TODO/HACK/stub scan, analyzer and format verification, 16 whitespace fixes, 350-test gate |
 
 ## Waves (details in `PHASE2_PLAN.md`)
 

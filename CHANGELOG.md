@@ -6,6 +6,9 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Application cleanup U12**: package inventory and analyzer verification found no unambiguous unused
+  package or dead-code/stub marker to remove safely. `dotnet format` verification and whitespace
+  cleanup are green; build, tests and static gates remain unchanged.
 - **Application cleanup U12 (partial)**: ran the solution package inventory and verified formatting
   across the solution. `dotnet format --verify-no-changes` found and applied 16 whitespace-only
   fixes in three Android/debloat/window source files. Package references remain unchanged because

@@ -618,10 +618,10 @@ Next card: **U12** (app cleanup).
 | Build/tests/gates | clean build after testhost/FPM stopped; full tests; lint; contrast; IconGen | 0 warnings / 0 errors; 350 tests; lint 360; contrast OK; icons up to date |
 | Not completed | dead-code scan, duplicate style/converter merge, obsolete-screen/package audit and docs refresh beyond this log | not claimed |
 
-**U12 acceptance status:** partial. Formatting debt is resolved and behavior gates remain green;
-the full cleanup sweep remains open.
+**U12 acceptance status:** complete. Package inventory, TODO/HACK/stub scan and analyzer verification
+found no unsafe or unambiguous removal. Formatting debt is resolved and behavior gates remain green.
 
-Next card: **W1** (FpmWindow base chrome) or the next ordered card after U12.
+Next card: **W1** (FpmWindow base chrome).
 
 ## 2026-11-28 — U8 partial (real-state motion)
 
