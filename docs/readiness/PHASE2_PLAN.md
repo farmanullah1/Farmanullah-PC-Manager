@@ -56,7 +56,7 @@ contrast and lint gates; frame budget evidence.
 | **T1** Sensor service + battery | W3 | Typed readings with `Unavailable` reasons; battery time/health; shared sampler cadence. | Fixtures + no-battery path; honest labels. |
 | **T2** CPU/GPU/laptop temperatures | T1 | LHM inside helper (opt-in), NVML/ADLX, thermal zones, thresholds, °C/°F. | Licence reviewed; failure modes tested; never labelled “CPU” for an ACPI zone. |
 | **T3** Toolbox customization | T1, T2, W4 | Widget editor, layout file, toolbar + Home wiring, import/export. **Partial 2026-11-28** — layout persistence/editor/toolbar enablement and 354 tests; live reorder/toolbar-only/Home pending. | Persists across restart/toolbar-only; unavailable tiles disabled with reason. |
-| **T4** Memory icon + polish | T3 | `Icon3D.Memory` in header/chips/tray/toolbar, gauge count-up, list stagger. | Captures; no rule changes. |
+| **T4** Memory icon + polish | T3 | `Icon3D.Memory` in header/chips/tray/toolbar, gauge count-up, list stagger. **Partial 2026-11-28** — progress/process stagger wired; live capture pending. | Captures; no rule changes. |
 
 **Wave gate:** sensors report real or explicitly unavailable values; toolbar lifecycle proven;
 memory overhead recorded in `BUILD_STATUS.md`.

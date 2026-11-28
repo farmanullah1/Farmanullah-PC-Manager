@@ -34,16 +34,16 @@
                 <StackPanel>
                     <Grid Margin="0,0,0,6">
                         <TextBlock Text="System Memory" FontSize="14" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding TotalPhysicalText}" Style="{StaticResource CaptionText}"
+                        <TextBlock x:Name="MemoryTotalText" Text="{Binding TotalPhysicalText}" Style="{StaticResource CaptionText}"
                                    HorizontalAlignment="Right" VerticalAlignment="Center" />
                     </Grid>
 
                     <!-- RAM Usage Progress Bar -->
-                    <ProgressBar Style="{StaticResource ThinProgress}" Height="8" Margin="0,6,0,8"
+                    <ProgressBar x:Name="MemoryLoadProgress" Style="{StaticResource ThinProgress}" Height="8" Margin="0,6,0,8"
                                  Value="{Binding LoadPercent, Mode=OneWay}" />
 
                     <Grid Margin="0,0,0,10">
-                        <TextBlock Text="{Binding AvailablePhysicalText}" Style="{StaticResource CaptionText}" />
+                        <TextBlock x:Name="MemoryAvailableText" Text="{Binding AvailablePhysicalText}" Style="{StaticResource CaptionText}" />
                         <TextBlock Text="{Binding CommitChargeText}" Style="{StaticResource CaptionText}"
                                    HorizontalAlignment="Right" />
                     </Grid>
@@ -120,7 +120,13 @@
                     <Border BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="6"
                             MaxHeight="360" Background="{DynamicResource App.Card}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding Processes}">
+                            <ItemsControl x:Name="MemoryProcessList" ItemsSource="{Binding Processes}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel IsVirtualizing="True"
+                                                                VirtualizationMode="Recycling" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border BorderBrush="{DynamicResource App.Border}" BorderThickness="0,0,0,1"

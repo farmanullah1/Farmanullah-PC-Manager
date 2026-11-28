@@ -53,6 +53,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.21 | U11 existing-feature sweep | 6–10 h | Improve named existing features with real data, tests and honest gaps | ☐ PARTIAL 2026-11-28 — Apps process search/sort/virtualization plus 3 tests; broader feature sweep remains open |
 | 2.22 | U12 app cleanup | 4–6 h | Remove dead code, duplicate styles/resources/packages, format, warnings and docs refresh | ☑ 2026-11-28 — package inventory, TODO/HACK/stub scan, analyzer and format verification, 16 whitespace fixes, 350-test gate |
 | 2.23 | T3 toolbox layout | 3–5 h | Layout editor/persistence, toolbar and optional Home wiring, reset/export/import | ☐ PARTIAL 2026-11-28 — typed 9-entry layout, editor, enablement, move/reset/export/import, 354 tests; live reorder/toolbar-only/Home not verified |
+| 2.24 | T4 Memory icon/polish | 2–3 h | Icon surfaces plus gauge count/progress and process stagger, no RAM-rule change | ☐ PARTIAL 2026-11-28 — real progress/row stagger wired; live gauge/process/icon matrix not captured |
 
 ## Waves (details in `PHASE2_PLAN.md`)
 

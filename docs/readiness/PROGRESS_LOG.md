@@ -654,3 +654,19 @@ Next card: **U9** (scrolling and navigation).
 implemented and unit-tested; live reorder/toolbar-only/Home reflection remains open.
 
 Next card: **T4** (Memory icon and polish).
+
+## 2026-11-28 — T4 partial (Memory icon and polish)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Header/icon | Memory page header uses `Icon3D.Key=Memory`; Home chip, tray Boost entry and toolbar RAM tile already use Memory/icon | no functional change |
+| Gauge | `MemoryView` eases the real `LoadPercent` progress bar through the U4 progress primitive | real system value |
+| Process rows | process collection refresh staggers the first 12 measured rows through U4 | virtualization retained |
+| Safety | no bulk RAM tricks, process relief remains explicit and confirmation-gated | unchanged |
+| Build/tests/gates | solution build/test/lint/contrast/IconGen | 0/0; 354 tests; lint 360; contrast OK; icons up to date |
+| Not captured | Memory page gauge/process animation, 360/560/1280/Dark and tray/Home/toolbar icon matrix | not claimed |
+
+**T4 acceptance status:** partial. Memory icon placement and real gauge/process motion are wired;
+live visual and icon-matrix verification remains open.
+
+Next card: **W1** (FpmWindow base chrome) after the approved wave order resumes.

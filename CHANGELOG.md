@@ -6,6 +6,11 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Memory polish T4 (partial)**: the Memory page already uses `Icon3D.Memory`; T4 now eases the real
+  load progress bar and staggers the first 12 measured process rows without changing memory/relief
+  rules. Live gauge/process captures and Home/tray/toolbar icon matrix remain to be captured.
+
+### Changed
 - **Toolbox customization T3 (partial)**: added `toolbox.layout.json` persistence with a typed nine-item
   default layout, enable/disable and move controls, reset, and export/import. The Toolbox editor
   and toolbar visibility are wired to the shared layout service. Live toolbar reorder and a real
