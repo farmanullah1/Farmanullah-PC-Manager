@@ -559,6 +559,22 @@ topics were changed externally without the owner's explicit confirmation.
 **U7 acceptance status:** partial. Cancel, settle and state behavior are implemented and tested;
 live reduced-motion/failure/cancel captures remain open.
 
+## 2026-11-28 — U9 partial (scrolling and navigation)
+
+| Step | Evidence | Result |
+|---|---|---|
+| History | `NavigationHistory<T>` plus title Back/Forward and mouse/keyboard integration | unit-tested sequence and branch clearing |
+| Shortcuts | Alt+Left/Right, Ctrl+1–7, Ctrl+comma and F5 | wired in `MainWindow.PreviewKeyDown` |
+| Scroll memory | cached vertical offset per page view and restored after transition | code-wired |
+| Smooth wheel | 150 ms-style dispatcher easing, 600 px Back-to-top, ComboBox/Slider exclusion | code-wired |
+| Tests/gates/UI | full suite, lint, contrast, IconGen, Android UIA probe | 345 passed; 0/0; lint 367; contrast OK; icons up to date; UIA probe passed |
+| Not captured | live nested wheel, scroll-offset retention and all responsive mouse/keyboard paths | not claimed |
+
+**U9 acceptance status:** partial. Core navigation/history/scroll behavior is implemented and
+tested; live nested-scroll and focus-restoration verification remains open.
+
+Next card: **U10** (padding and localization foundation).
+
 ## 2026-11-28 — U8 partial (real-state motion)
 
 | Step | Evidence | Result |

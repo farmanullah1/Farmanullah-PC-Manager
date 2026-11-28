@@ -6,6 +6,13 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Scrolling and navigation U9 (partial)**: the shell now has Back/Forward title controls,
+  Alt+Left/Right and mouse Back/Forward navigation, Ctrl+1–7 and Ctrl+, page shortcuts, F5 refresh,
+  per-page scroll offset restoration, a Back-to-top button after 600 px, and inertial wheel easing
+  that avoids ComboBox/Slider hijacking. A focused navigation-history test covers sequence and
+  forward-branch clearing. Live nested-wheel and scroll retention captures remain pending.
+
+### Changed
 - **Other motion U8 (partial)**: Storage and Debloat now start motion only while real work is active:
   the Cleanup Scan icon/status shimmer during busy scans, Cleanup rows stagger on collection
   refresh (maximum 12), and the Debloat running card/icon fade/shimmer during apply/detect/undo.

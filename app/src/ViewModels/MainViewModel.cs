@@ -71,6 +71,9 @@ public sealed partial class MainViewModel : ObservableObject
         ToggleCommandPaletteCommand = new RelayCommand(ToggleCommandPalette);
         CloseCommandPaletteCommand = new RelayCommand(() => IsCommandPaletteOpen = false);
         ExecutePaletteCommand = new RelayCommand<CommandPaletteEntry>(ExecuteCommand);
+        GoBackCommand = new RelayCommand(GoBack, () => _navigationHistory.CanGoBack);
+        GoForwardCommand = new RelayCommand(GoForward, () => _navigationHistory.CanGoForward);
+        RefreshCurrentCommand = new AsyncRelayCommand(RefreshCurrentAsync);
 
         BuildCommandPalette();
     }
@@ -85,6 +88,12 @@ public sealed partial class MainViewModel : ObservableObject
     public IRelayCommand ToggleCommandPaletteCommand { get; }
     public IRelayCommand CloseCommandPaletteCommand { get; }
     public IRelayCommand<CommandPaletteEntry> ExecutePaletteCommand { get; }
+    public IRelayCommand GoBackCommand { get; }
+    public IRelayCommand GoForwardCommand { get; }
+    public IRelayCommand RefreshCurrentCommand { get; }
+
+    private readonly NavigationHistory<NavigationItem> _navigationHistory = new();
+    private bool _isApplyingHistory;
 
     [ObservableProperty]
     private bool _isCommandPaletteOpen;
@@ -231,6 +240,13 @@ public sealed partial class MainViewModel : ObservableObject
                 return;
             }
 
+            if (!_isApplyingHistory)
+            {
+                _navigationHistory.Push(_selectedPage);
+                GoBackCommand.NotifyCanExecuteChanged();
+                GoForwardCommand.NotifyCanExecuteChanged();
+            }
+
             SetProperty(ref _selectedPage, value);
             CurrentPage = value.Page;
 
@@ -240,6 +256,53 @@ public sealed partial class MainViewModel : ObservableObject
                 ? ReloadAfterTransitionAsync(value.Page)
                 : value.Page.EnsureLoadedAsync();
         }
+    }
+
+    public void GoBack()
+    {
+        if (!_navigationHistory.TryBack(_selectedPage, out NavigationItem? previous) ||
+            previous is null)
+        {
+            return;
+        }
+        _isApplyingHistory = true;
+        try
+        {
+            SelectedPage = previous;
+        }
+        finally
+        {
+            _isApplyingHistory = false;
+        }
+
+        GoBackCommand.NotifyCanExecuteChanged();
+        GoForwardCommand.NotifyCanExecuteChanged();
+    }
+
+    public void GoForward()
+    {
+        if (!_navigationHistory.TryForward(_selectedPage, out NavigationItem? next) ||
+            next is null)
+        {
+            return;
+        }
+        _isApplyingHistory = true;
+        try
+        {
+            SelectedPage = next;
+        }
+        finally
+        {
+            _isApplyingHistory = false;
+        }
+
+        GoBackCommand.NotifyCanExecuteChanged();
+        GoForwardCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task RefreshCurrentAsync()
+    {
+        await CurrentPage.LoadAsync();
     }
 
     /// <summary>Called by the window once it is on screen.</summary>

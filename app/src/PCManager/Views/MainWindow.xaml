@@ -15,7 +15,9 @@
         FontFamily="Segoe UI Variable Text, Segoe UI"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
-        PreviewKeyDown="Window_PreviewKeyDown">
+        PreviewKeyDown="Window_PreviewKeyDown"
+        PreviewMouseDown="Window_PreviewMouseDown"
+        PreviewMouseWheel="Window_PreviewMouseWheel">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40"
@@ -124,6 +126,18 @@
                     <TextBlock Text="FPM"
                                FontSize="11.5" FontWeight="SemiBold"
                                Margin="8,0,0,0" VerticalAlignment="Center" />
+                    <Button Style="{StaticResource CaptionButton}"
+                            Content="&#x2190;" ToolTip="Back (Alt+Left)"
+                            Command="{Binding GoBackCommand}"
+                            AutomationProperties.Name="Navigate back"
+                            Margin="{StaticResource Thickness.2}" VerticalAlignment="Center"
+                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                    <Button Style="{StaticResource CaptionButton}"
+                            Content="&#x2192;" ToolTip="Forward (Alt+Right)"
+                            Command="{Binding GoForwardCommand}"
+                            AutomationProperties.Name="Navigate forward"
+                            Margin="{StaticResource Thickness.1}" VerticalAlignment="Center"
+                            WindowChrome.IsHitTestVisibleInChrome="True" />
                     <Button Content="Ctrl+K" Style="{StaticResource PillButton}" Padding="6,1" FontSize="9.5"
                             ToolTip="Open Command Palette (Ctrl+K)"
                             Command="{Binding ToggleCommandPaletteCommand}"
@@ -210,6 +224,17 @@
                 <!-- Hosted pages are cached here: one visual per page keeps its scroll position
                      and re-binding cost is paid once, so transitions stay smooth. -->
                 <Grid x:Name="PageHost" Grid.Column="1" ClipToBounds="True" />
+                <Button x:Name="BackToTopButton"
+                        Grid.Column="1"
+                        Content="Top"
+                        Style="{StaticResource PillButton}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Margin="{StaticResource Thickness.3}"
+                        Visibility="Collapsed"
+                        AutomationProperties.Name="Scroll back to top"
+                        Click="BackToTop_Click"
+                        Panel.ZIndex="20" />
             </Grid>
 
             <!-- ======================= Command Palette Overlay ======================= -->

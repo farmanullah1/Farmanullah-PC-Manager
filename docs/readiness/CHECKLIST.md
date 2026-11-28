@@ -48,6 +48,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.16 | R6 repository description/topics | 0.5 h | Description ≤350 chars and exact topics prepared or applied | ☑ 2026-11-28 — auth verified, metadata read, exact `gh repo edit` command prepared; external edit deferred |
 | 2.17 | U7 shared Boost animation | 3–5 h | Shared state host, cancel, 2 s settlement, Reduced Motion and live visual capture | ☐ PARTIAL 2026-11-28 — cancel/CTS/settle implemented; 343 tests, 8 Boost tests; live Reduced/Failure/Cancel captures not run |
 | 2.18 | U8 other animation states | 4–6 h | Real scan/loading, row stagger, cleanup/dialog/sensor/debloat motion with Reduced guard | ☐ PARTIAL 2026-11-28 — Storage/Debloat busy shimmer and cleanup stagger wired; live cleanup/toast/dialog/sensor matrix remains unverified |
+| 2.19 | U9 scrolling and navigation | 3–5 h | Smooth wheel/keyboard, overlay scrollbar/back-to-top, history, shortcuts, scroll memory and focus | ☐ PARTIAL 2026-11-28 — history/shortcuts/scroll memory/back-to-top/wheel easing implemented; 345 tests; live nested-wheel/focus/offset retention remain unverified |
 
 ## Waves (details in `PHASE2_PLAN.md`)
 

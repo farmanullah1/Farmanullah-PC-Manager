@@ -29,8 +29,14 @@ public partial class MainWindow : FpmWindow
     private readonly IAppLogger _logger;
     private readonly FrameTimingProbe _frameProbe = new();
     private readonly Dictionary<object, FrameworkElement> _pageViews = new();
+    private readonly Dictionary<ViewModelBase, double> _scrollOffsets = new();
     private FrameworkElement? _visiblePage;
     private DesktopFollowLoop? _desktopFollower;
+    private readonly DispatcherTimer _smoothScrollTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
+    private ScrollViewer? _smoothScrollViewer;
+    private ScrollViewer? _backToTopScrollViewer;
+    private double _smoothScrollTarget;
+    private double _smoothScrollVelocity;
 
     public MainWindow(
         MainViewModel viewModel,
@@ -51,6 +57,8 @@ public partial class MainWindow : FpmWindow
         _settings = settings;
         _logger = logger;
         DataContext = viewModel;
+
+        _smoothScrollTimer.Tick += OnSmoothScrollTick;
 
         RestoreWindowBounds();
 
@@ -133,6 +141,8 @@ public partial class MainWindow : FpmWindow
         }
 
         _visiblePage = next;
+        SaveScrollOffset(previous);
+        RestoreScrollOffset(next);
 
         bool movingDown = previous is null
             || IndexOfPage(next.DataContext) >= IndexOfPage(previous.DataContext);
@@ -351,8 +361,170 @@ public partial class MainWindow : FpmWindow
     }
 
     /// <summary>Escape closes the palette; arrows move the highlight; Enter runs the entry.</summary>
+    private void Window_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.XButton1)
+        {
+            _viewModel.GoBackCommand.Execute(null);
+            e.Handled = true;
+        }
+        else if (e.ChangedButton == MouseButton.XButton2)
+        {
+            _viewModel.GoForwardCommand.Execute(null);
+            e.Handled = true;
+        }
+    }
+
+    private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        DependencyObject? source = e.OriginalSource as DependencyObject;
+        if (source is not null && HasAncestor<ComboBox>(source))
+        {
+            return;
+        }
+        if (source is not null && HasAncestor<Slider>(source))
+        {
+            return;
+        }
+
+        ScrollViewer? scroll = source is null
+            ? null
+            : FindContainingScrollViewer(source);
+
+        if (scroll is null)
+        {
+            return;
+        }
+
+        bool atStart = e.Delta > 0 && scroll.VerticalOffset <= 0;
+        bool atEnd = e.Delta < 0 &&
+                     scroll.VerticalOffset >= scroll.ScrollableHeight;
+
+        if (atStart || atEnd)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        _smoothScrollViewer = scroll;
+        _smoothScrollTarget = Math.Clamp(
+            scroll.VerticalOffset - (e.Delta * 0.45),
+            0,
+            scroll.ScrollableHeight);
+        _smoothScrollVelocity = (_smoothScrollTarget - scroll.VerticalOffset) * 0.28;
+        _smoothScrollTimer.Start();
+    }
+
+    private void OnSmoothScrollTick(object? sender, EventArgs e)
+    {
+        if (_smoothScrollViewer is null)
+        {
+            _smoothScrollTimer.Stop();
+            return;
+        }
+
+        double remaining = _smoothScrollTarget - _smoothScrollViewer.VerticalOffset;
+        if (Math.Abs(remaining) < 1)
+        {
+            _smoothScrollViewer.ScrollToVerticalOffset(_smoothScrollTarget);
+            _smoothScrollTimer.Stop();
+            _smoothScrollViewer = null;
+            return;
+        }
+
+        _smoothScrollVelocity = (_smoothScrollVelocity + remaining * 0.18) * 0.72;
+        _smoothScrollViewer.ScrollToVerticalOffset(
+            Math.Clamp(
+                _smoothScrollViewer.VerticalOffset + _smoothScrollVelocity,
+                0,
+                _smoothScrollViewer.ScrollableHeight));
+    }
+
+    private static ScrollViewer? FindContainingScrollViewer(DependencyObject source)
+    {
+        DependencyObject? current = source;
+        while (current is not null)
+        {
+            if (current is ScrollViewer scroll)
+            {
+                return scroll;
+            }
+            current = VisualTreeHelper.GetParent(current);
+        }
+        return null;
+    }
+
+    private static bool HasAncestor<T>(DependencyObject source)
+        where T : DependencyObject
+    {
+        DependencyObject? current = source;
+        while (current is not null)
+        {
+            if (current is T)
+            {
+                return true;
+            }
+            current = VisualTreeHelper.GetParent(current);
+        }
+        return false;
+    }
+
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
     {
+        if (Keyboard.Modifiers == ModifierKeys.Alt &&
+            e.SystemKey == Key.Left)
+        {
+            _viewModel.GoBackCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
+        if (Keyboard.Modifiers == ModifierKeys.Alt &&
+            e.SystemKey == Key.Right)
+        {
+            _viewModel.GoForwardCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
+        if (Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            string? key = e.Key switch
+            {
+                Key.D1 => PageKeys.Home,
+                Key.D2 => PageKeys.Memory,
+                Key.D3 => PageKeys.Protection,
+                Key.D4 => PageKeys.Storage,
+                Key.D5 => PageKeys.Apps,
+                Key.D6 => PageKeys.Toolbox,
+                Key.D7 => PageKeys.Debloat,
+                _ => null,
+            };
+
+            if (key is not null)
+            {
+                _viewModel.SelectedPage =
+                    _viewModel.Pages.First(item => item.Key == key);
+                e.Handled = true;
+                return;
+            }
+
+            if (e.Key == Key.OemComma)
+            {
+                _viewModel.SelectedPage =
+                    _viewModel.SettingsItems.First();
+                e.Handled = true;
+                return;
+            }
+        }
+
+        if (e.Key == Key.F5)
+        {
+            _viewModel.RefreshCurrentCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
         if (!_viewModel.IsCommandPaletteOpen)
         {
             return;
@@ -408,6 +580,92 @@ public partial class MainWindow : FpmWindow
         {
             _viewModel.ExecutePaletteCommand.Execute(entry);
         }
+    }
+
+    private void SaveScrollOffset(FrameworkElement? page)
+    {
+        if (page?.DataContext is not ViewModelBase viewModel)
+        {
+            return;
+        }
+
+        ScrollViewer? scroll = FindScrollViewer(page);
+        if (scroll is not null)
+        {
+            _scrollOffsets[viewModel] = scroll.VerticalOffset;
+        }
+    }
+
+    private void RestoreScrollOffset(FrameworkElement page)
+    {
+        if (page.DataContext is not ViewModelBase viewModel)
+        {
+            return;
+        }
+
+        ScrollViewer? scroll = FindScrollViewer(page);
+        if (scroll is not null &&
+            _scrollOffsets.TryGetValue(viewModel, out double offset))
+        {
+            Dispatcher.BeginInvoke(
+                new Action(() => scroll.ScrollToVerticalOffset(offset)),
+                DispatcherPriority.Loaded);
+        }
+
+        AttachBackToTop(scroll);
+    }
+
+    private void AttachBackToTop(ScrollViewer? scroll)
+    {
+        if (_backToTopScrollViewer is not null)
+        {
+            _backToTopScrollViewer.ScrollChanged -= OnPageScrollChanged;
+        }
+
+        _backToTopScrollViewer = scroll;
+        if (_backToTopScrollViewer is null)
+        {
+            BackToTopButton.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        _backToTopScrollViewer.ScrollChanged += OnPageScrollChanged;
+        BackToTopButton.Visibility =
+            _backToTopScrollViewer.VerticalOffset >= 600
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+    }
+
+    private void OnPageScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        BackToTopButton.Visibility = e.VerticalOffset >= 600
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
+
+    private void BackToTop_Click(object sender, RoutedEventArgs e)
+    {
+        _backToTopScrollViewer?.ScrollToHome();
+    }
+
+    private static ScrollViewer? FindScrollViewer(DependencyObject root)
+    {
+        if (root is ScrollViewer direct)
+        {
+            return direct;
+        }
+
+        for (int index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+        {
+            ScrollViewer? found = FindScrollViewer(
+                VisualTreeHelper.GetChild(root, index));
+            if (found is not null)
+            {
+                return found;
+            }
+        }
+
+        return null;
     }
 
     private void StartDesktopFollower()
