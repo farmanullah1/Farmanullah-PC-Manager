@@ -6,6 +6,13 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Added
+- **Android multi-user, multi-device and wireless controls (A6)**: the Android tab now keeps device
+  and work-profile selectors, connects each package selection to the selected device/user, exposes
+  private-IP-only ADB pairing and connection commands, and disconnects only wireless selections.
+  A battery and connection pre-check is shown before apply; unavailable unlock state is reported
+  honestly rather than fabricated. No real device or package mutation was used.
+
+### Added
 - **Android backup, restore, log and selection portability (A5)**: package application now creates
   an automatic per-device/per-user JSON snapshot, stores it under `%LOCALAPPDATA%\FPM\android\backups`,
   and logs package actions in a rotated `android_actions.log` using a SHA-256 serial hash, model,

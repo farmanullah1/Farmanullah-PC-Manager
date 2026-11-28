@@ -39,6 +39,12 @@ public sealed partial class AndroidDebloatViewModel : ObservableObject, IDisposa
         RefreshCommand = new AsyncRelayCommand(RefreshAsync, () => !IsRefreshing);
         UsePathCommand = new AsyncRelayCommand(UsePathAsync, () => !IsRefreshing);
         DownloadCommand = new AsyncRelayCommand(DownloadAsync, () => ConsentGiven && !IsRefreshing);
+        PairWirelessCommand = new AsyncRelayCommand(PairWirelessAsync,
+            () => !IsRefreshing && HasValidPairingInput);
+        ConnectWirelessCommand = new AsyncRelayCommand(ConnectWirelessAsync,
+            () => !IsRefreshing && HasValidHostAndPort);
+        DisconnectWirelessCommand = new AsyncRelayCommand(DisconnectWirelessAsync,
+            () => !IsRefreshing && SelectedDevice is { IsUsable: true });
     }
 
     public ObservableCollection<AdbDevice> Devices { get; } = new();
@@ -49,6 +55,9 @@ public sealed partial class AndroidDebloatViewModel : ObservableObject, IDisposa
     public AsyncRelayCommand RefreshCommand { get; }
     public AsyncRelayCommand UsePathCommand { get; }
     public AsyncRelayCommand DownloadCommand { get; }
+    public AsyncRelayCommand PairWirelessCommand { get; }
+    public AsyncRelayCommand ConnectWirelessCommand { get; }
+    public AsyncRelayCommand DisconnectWirelessCommand { get; }
 
     public string VersionText => $"Google platform-tools {AdbPackage.Version} · SHA-256 {AdbPackage.Sha256[..12]}…";
     public string LicenseText => AdbPackage.LicenseNotice;
@@ -87,12 +96,36 @@ public sealed partial class AndroidDebloatViewModel : ObservableObject, IDisposa
     [ObservableProperty]
     private AdbDevice? _selectedDevice;
 
+    [ObservableProperty]
+    private string _wirelessHost = string.Empty;
+
+    [ObservableProperty]
+    private string _wirelessPort = "5555";
+
+    [ObservableProperty]
+    private string _pairingPort = string.Empty;
+
+    [ObservableProperty]
+    private string _pairingCode = string.Empty;
+
+    [ObservableProperty]
+    private string _wirelessStatusText = "Wireless ADB: not used.";
+
+    [ObservableProperty]
+    private string _deviceHealthText = "Health pre-check: refresh after selecting a device.";
+
     partial void OnConsentGivenChanged(bool value) => RefreshCommands();
 
     partial void OnIsRefreshingChanged(bool value) => RefreshCommands();
 
+    partial void OnWirelessHostChanged(string value) => RefreshCommands();
+    partial void OnWirelessPortChanged(string value) => RefreshCommands();
+    partial void OnPairingPortChanged(string value) => RefreshCommands();
+    partial void OnPairingCodeChanged(string value) => RefreshCommands();
+
     partial void OnSelectedDeviceChanged(AdbDevice? value)
     {
+        RefreshCommands();
         if (_applying)
         {
             return;
@@ -290,11 +323,148 @@ public sealed partial class AndroidDebloatViewModel : ObservableObject, IDisposa
             ProfileText = users.Count == 0
                 ? "Profiles: none reported."
                 : $"{users.Count} profile(s) · {users.Count(user => user.IsWorkProfile)} work profile(s)";
+
+            AdbProcessResult battery = await _adb.GetBatteryAsync(device);
+            int? batteryPercent = battery.Success
+                ? AdbParsers.ParseBatteryPercent(battery.StandardOutput)
+                : null;
+            string batteryText = batteryPercent is null
+                ? "Battery: unavailable"
+                : $"Battery: {batteryPercent}%";
+            DeviceHealthText =
+                $"{batteryText} · USB debugging authorized · screen-unlock status unavailable · " +
+                (device.Connection == AdbConnectionKind.Wireless
+                    ? "Wireless connection stable"
+                    : "USB connection stable") +
+                (batteryPercent is < 30
+                    ? " · Warning: below 30%; charging is recommended."
+                    : " · Apply is allowed.");
         }
         catch (Exception ex)
         {
             DeviceInfoText = "Device identity failed: " + ex.Message;
             ProfileText = "Profiles: not read.";
+        }
+    }
+
+    private bool HasValidHostAndPort
+    {
+        get
+        {
+            return AdbCommandLine.IsPrivateIpAddress(WirelessHost) &&
+                   int.TryParse(WirelessPort, out int port) &&
+                   port is >= 1 and <= 65535;
+        }
+    }
+
+    private bool HasValidPairingInput
+    {
+        get
+        {
+            return AdbCommandLine.IsPrivateIpAddress(WirelessHost) &&
+                   int.TryParse(PairingPort, out int port) &&
+                   port is >= 1 and <= 65535 &&
+                   PairingCode.Length == 6 &&
+                   PairingCode.All(char.IsDigit);
+        }
+    }
+
+    private async Task PairWirelessAsync()
+    {
+        if (!HasValidPairingInput ||
+            !int.TryParse(PairingPort, out int port))
+        {
+            WirelessStatusText =
+                "Wireless ADB: use a private IPv4 address and a 6-digit pairing code.";
+            return;
+        }
+
+        IsRefreshing = true;
+        WirelessStatusText = "Wireless ADB: pairing…";
+        try
+        {
+            AdbProcessResult result =
+                await _adb.PairWirelessAsync(
+                    WirelessHost.Trim(),
+                    port,
+                    PairingCode.Trim());
+            WirelessStatusText = result.Success
+                ? "Wireless ADB: paired. Enter the connect port, then press Connect."
+                : "Wireless ADB pairing failed: " + result.Combined;
+        }
+        catch (Exception ex)
+        {
+            WirelessStatusText = "Wireless ADB pairing failed: " + ex.Message;
+        }
+        finally
+        {
+            IsRefreshing = false;
+        }
+    }
+
+    private async Task ConnectWirelessAsync()
+    {
+        if (!HasValidHostAndPort ||
+            !int.TryParse(WirelessPort, out int port))
+        {
+            WirelessStatusText =
+                "Wireless ADB: use a private IPv4 address and port 1–65535.";
+            return;
+        }
+
+        IsRefreshing = true;
+        WirelessStatusText = "Wireless ADB: connecting…";
+        try
+        {
+            AdbProcessResult result =
+                await _adb.ConnectWirelessAsync(
+                    WirelessHost.Trim(),
+                    port);
+            WirelessStatusText = result.Success
+                ? "Wireless ADB: connected."
+                : "Wireless ADB connection failed: " + result.Combined;
+            if (result.Success)
+            {
+                Apply(await _adb.RefreshAsync());
+            }
+        }
+        catch (Exception ex)
+        {
+            WirelessStatusText = "Wireless ADB connection failed: " + ex.Message;
+        }
+        finally
+        {
+            IsRefreshing = false;
+        }
+    }
+
+    private async Task DisconnectWirelessAsync()
+    {
+        if (SelectedDevice is not { Connection: AdbConnectionKind.Wireless })
+        {
+            WirelessStatusText =
+                "Wireless ADB: disconnect is available only for a wireless-selected device.";
+            return;
+        }
+
+        IsRefreshing = true;
+        WirelessStatusText = "Wireless ADB: disconnecting…";
+        try
+        {
+            AdbProcessResult result =
+                await _adb.DisconnectWirelessAsync(SelectedDevice);
+            WirelessStatusText = result.Success
+                ? "Wireless ADB: disconnected."
+                : "Wireless ADB disconnect failed: " + result.Combined;
+            Apply(await _adb.RefreshAsync());
+        }
+        catch (Exception ex)
+        {
+            WirelessStatusText = "Wireless ADB disconnect failed: " + ex.Message;
+        }
+        finally
+        {
+            IsRefreshing = false;
         }
     }
 
@@ -311,6 +481,9 @@ public sealed partial class AndroidDebloatViewModel : ObservableObject, IDisposa
         RefreshCommand.NotifyCanExecuteChanged();
         UsePathCommand.NotifyCanExecuteChanged();
         DownloadCommand.NotifyCanExecuteChanged();
+        PairWirelessCommand.NotifyCanExecuteChanged();
+        ConnectWirelessCommand.NotifyCanExecuteChanged();
+        DisconnectWirelessCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(VersionText));
     }
 }

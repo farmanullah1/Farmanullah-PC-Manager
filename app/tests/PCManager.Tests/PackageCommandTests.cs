@@ -79,4 +79,74 @@ public sealed class PackageCommandTests
             new[] { "com.example.app", "android" },
             AdbParsers.ParsePackageList(output));
     }
+
+    [Theory]
+    [InlineData("10.0.0.2", true)]
+    [InlineData("172.20.1.4", true)]
+    [InlineData("192.168.1.20", true)]
+    [InlineData("8.8.8.8", false)]
+    [InlineData("localhost", false)]
+    public void Wireless_hosts_are_limited_to_private_ipv4(
+        string host,
+        bool expected)
+    {
+        Assert.Equal(expected, AdbCommandLine.IsPrivateIpAddress(host));
+    }
+
+    [Fact]
+    public void Wireless_commands_are_typed_and_pairing_code_is_validated()
+    {
+        Assert.Equal(
+            new[] { "pair", "192.168.1.20:37145", "123456" },
+            AdbCommandLine.Build(
+                AdbCommand.PairWireless("192.168.1.20", 37145, "123456")));
+        Assert.Equal(
+            new[] { "connect", "192.168.1.20:5555" },
+            AdbCommandLine.Build(
+                AdbCommand.ConnectWireless("192.168.1.20", 5555)));
+        Assert.Equal(
+            new[] { "disconnect", "192.168.1.20:5555" },
+            AdbCommandLine.Build(
+                AdbCommand.DisconnectWireless("192.168.1.20:5555")));
+        Assert.Equal(
+            new[] { "-s", "SERIAL", "shell", "dumpsys", "battery" },
+            AdbCommandLine.Build(AdbCommand.GetBattery("SERIAL")));
+
+        Assert.Throws<ArgumentException>(() =>
+            AdbCommandLine.Build(
+                AdbCommand.PairWireless("8.8.8.8", 37145, "123456")));
+        Assert.Throws<ArgumentException>(() =>
+            AdbCommandLine.Build(
+                AdbCommand.PairWireless("192.168.1.20", 37145, "12ab56")));
+    }
+
+    [Theory]
+    [InlineData("  level: 27\nstatus: 3\n", 27)]
+    [InlineData("level: 100\n", 100)]
+    [InlineData("level: unknown\n", null)]
+    public void Battery_parser_returns_only_a_valid_percentage(
+        string output,
+        int? expected)
+    {
+        Assert.Equal(expected, AdbParsers.ParseBatteryPercent(output));
+    }
+
+    [Fact]
+    public void Health_precheck_warns_below_threshold_but_accepts_unknown()
+    {
+        Assert.False(new AdbHealthStatus(
+            29, true, false, false, true, true, "Low battery").IsApplySafe);
+        Assert.True(new AdbHealthStatus(
+            null, null, null, false, true, true, "Unknown battery").IsApplySafe);
+        Assert.True(new AdbHealthStatus(
+            30, true, false, false, true, true, "Ready").IsApplySafe);
+    }
+
+    [Fact]
+    public void Wireless_disconnect_requires_a_wireless_serial()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            AdbCommandLine.Build(
+                AdbCommand.DisconnectWireless("bad serial")));
+    }
 }

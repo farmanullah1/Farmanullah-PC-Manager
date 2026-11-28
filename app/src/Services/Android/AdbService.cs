@@ -33,6 +33,25 @@ public interface IAdbService
         AdbDevice device,
         CancellationToken cancellationToken = default);
 
+    Task<AdbProcessResult> PairWirelessAsync(
+        string host,
+        int port,
+        string pairingCode,
+        CancellationToken cancellationToken = default);
+
+    Task<AdbProcessResult> ConnectWirelessAsync(
+        string host,
+        int port,
+        CancellationToken cancellationToken = default);
+
+    Task<AdbProcessResult> DisconnectWirelessAsync(
+        AdbDevice device,
+        CancellationToken cancellationToken = default);
+
+    Task<AdbProcessResult> GetBatteryAsync(
+        AdbDevice device,
+        CancellationToken cancellationToken = default);
+
     void Shutdown();
 }
 
@@ -238,6 +257,100 @@ public sealed class AdbService : IAdbService, IAdbCommandExecutor, IDisposable
         return result.Success
             ? AdbParsers.ParseUsers(result.StandardOutput)
             : Array.Empty<AdbUser>();
+    }
+
+    public async Task<AdbProcessResult> PairWirelessAsync(
+        string host,
+        int port,
+        string pairingCode,
+        CancellationToken cancellationToken = default)
+    {
+        if (_adbPath is null)
+        {
+            AdbLocateResult locate = await LocateAsync(cancellationToken).ConfigureAwait(false);
+            if (locate.Kind != AdbStatusKind.Ready)
+            {
+                return new AdbProcessResult(-1, string.Empty, locate.Message);
+            }
+        }
+
+        if (!await EnsureServerAsync(cancellationToken).ConfigureAwait(false))
+        {
+            return new AdbProcessResult(-1, string.Empty, "ADB server could not start.");
+        }
+
+        AdbCommand command;
+        try
+        {
+            command = AdbCommand.PairWireless(host, port, pairingCode);
+        }
+        catch (ArgumentException ex)
+        {
+            return new AdbProcessResult(-1, string.Empty, ex.Message);
+        }
+        return await _runner.RunAsync(_adbPath!, command, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<AdbProcessResult> ConnectWirelessAsync(
+        string host,
+        int port,
+        CancellationToken cancellationToken = default)
+    {
+        if (_adbPath is null)
+        {
+            AdbLocateResult locate = await LocateAsync(cancellationToken).ConfigureAwait(false);
+            if (locate.Kind != AdbStatusKind.Ready)
+            {
+                return new AdbProcessResult(-1, string.Empty, locate.Message);
+            }
+        }
+
+        if (!await EnsureServerAsync(cancellationToken).ConfigureAwait(false))
+        {
+            return new AdbProcessResult(-1, string.Empty, "ADB server could not start.");
+        }
+
+        AdbCommand command;
+        try
+        {
+            command = AdbCommand.ConnectWireless(host, port);
+        }
+        catch (ArgumentException ex)
+        {
+            return new AdbProcessResult(-1, string.Empty, ex.Message);
+        }
+        return await _runner.RunAsync(_adbPath!, command, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<AdbProcessResult> DisconnectWirelessAsync(
+        AdbDevice device,
+        CancellationToken cancellationToken = default)
+    {
+        if (_adbPath is null)
+        {
+            return new AdbProcessResult(-1, string.Empty, "ADB is not located.");
+        }
+        return await _runner.RunAsync(
+            _adbPath,
+            AdbCommand.DisconnectWireless(device.Serial),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<AdbProcessResult> GetBatteryAsync(
+        AdbDevice device,
+        CancellationToken cancellationToken = default)
+    {
+        if (!device.IsUsable ||
+            _adbPath is null ||
+            !await EnsureServerAsync(cancellationToken).ConfigureAwait(false))
+        {
+            return new AdbProcessResult(-1, string.Empty, "Device is not authorized.");
+        }
+
+        return await _runner.RunAsync(
+            _adbPath,
+            AdbCommand.GetBattery(device.Serial),
+            cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<AdbProcessResult> ExecuteAsync(

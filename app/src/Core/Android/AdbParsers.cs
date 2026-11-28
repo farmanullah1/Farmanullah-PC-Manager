@@ -201,6 +201,25 @@ public static class AdbParsers
         return packages.Distinct(StringComparer.Ordinal).ToArray();
     }
 
+    public static int? ParseBatteryPercent(string output)
+    {
+        foreach (string rawLine in output.Split('\n'))
+        {
+            string line = rawLine.Trim();
+            if (!line.StartsWith("level:", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            string value = line.Substring("level:".Length).Trim();
+            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int percent))
+            {
+                return percent is >= 0 and <= 100 ? percent : null;
+            }
+        }
+        return null;
+    }
+
     private static string Value(IReadOnlyDictionary<string, string> properties, params string[] keys)
     {
         foreach (string key in keys)

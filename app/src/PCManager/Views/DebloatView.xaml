@@ -461,6 +461,57 @@
                             <Border Style="{StaticResource Card}" Padding="{StaticResource Thickness.3}"
                                     Margin="{StaticResource Thickness.2}">
                                 <StackPanel>
+                                    <TextBlock Text="Wireless ADB" FontWeight="SemiBold" />
+                                    <TextBlock Text="Private IPv4 addresses only. Pairing code: six digits."
+                                               Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
+                                    <WrapPanel Margin="{StaticResource Thickness.1}">
+                                        <TextBox Text="{Binding Android.WirelessHost, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="180" AutomationProperties.Name="Wireless ADB host"
+                                                 Margin="{StaticResource Thickness.1}" />
+                                        <TextBox Text="{Binding Android.PairingPort, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="90" AutomationProperties.Name="Wireless ADB pairing port"
+                                                 Margin="{StaticResource Thickness.1}" />
+                                        <TextBox Text="{Binding Android.PairingCode, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="90" AutomationProperties.Name="Wireless ADB pairing code"
+                                                 Margin="{StaticResource Thickness.1}" />
+                                        <TextBox Text="{Binding Android.WirelessPort, UpdateSourceTrigger=PropertyChanged}"
+                                                 Width="90" AutomationProperties.Name="Wireless ADB connect port"
+                                                 Margin="{StaticResource Thickness.1}" />
+                                    </WrapPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource Thickness.1}">
+                                        <Button Content="Pair" Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding Android.PairWirelessCommand}"
+                                                AutomationProperties.Name="Pair wireless ADB"
+                                                Margin="{StaticResource Thickness.1}" />
+                                        <Button Content="Connect" Style="{StaticResource PrimaryButton}"
+                                                Command="{Binding Android.ConnectWirelessCommand}"
+                                                AutomationProperties.Name="Connect wireless ADB"
+                                                Margin="{StaticResource Thickness.1}" />
+                                        <Button Content="Disconnect" Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding Android.DisconnectWirelessCommand}"
+                                                AutomationProperties.Name="Disconnect selected ADB device"
+                                                Margin="{StaticResource Thickness.1}" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Android.WirelessStatusText}"
+                                               Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}" Padding="{StaticResource Thickness.3}"
+                                    Margin="{StaticResource Thickness.2}">
+                                <StackPanel>
+                                    <TextBlock Text="Device health pre-check" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Android.DeviceHealthText}"
+                                               Style="{StaticResource CaptionText}" TextWrapping="Wrap"
+                                               AutomationProperties.Name="Android device health pre-check" />
+                                    <TextBlock Text="Battery below 30% shows a warning. The final Apply confirmation remains required."
+                                               Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}" Padding="{StaticResource Thickness.3}"
+                                    Margin="{StaticResource Thickness.2}">
+                                <StackPanel>
                                     <TextBlock Text="Android package safety" FontWeight="SemiBold" />
                                     <TextBlock Text="Removing system, launcher, telephony or OEM packages can brick or destabilize a phone. Unsafe packages stay blocked unless Expert mode and the exact package id are provided."
                                                Style="{StaticResource CaptionText}" TextWrapping="Wrap" />

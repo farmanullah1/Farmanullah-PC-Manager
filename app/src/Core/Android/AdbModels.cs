@@ -91,6 +91,20 @@ public sealed record AdbProvisionResult(AdbStatusKind Kind, string? ExecutablePa
     public bool Success => Kind == AdbStatusKind.Ready;
 }
 
+public sealed record AdbHealthStatus(
+    int? BatteryPercent,
+    bool? AcPowered,
+    bool? UsbPowered,
+    bool DeviceUnlocked,
+    bool UsbDebuggingAuthorized,
+    bool ConnectionStable,
+    string Message)
+{
+    public bool IsApplySafe =>
+        BatteryPercent is null ||
+        BatteryPercent >= 30;
+}
+
 public static class AdbOnboarding
 {
     public static string For(AdbStatusKind kind) => kind switch

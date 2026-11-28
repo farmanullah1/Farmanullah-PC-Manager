@@ -82,7 +82,7 @@ memory overhead recorded in `BUILD_STATUS.md`.
 | **A3** Package engine | A2 | State computation, typed commands, batch results, verify, dependency warnings. **Done 2026-11-28 (`3946e1d` + `0c50c62`)** — 19 A3 tests, fake executor, denylist/Expert gate, disconnect stop; see `PROGRESS_LOG.md`. | Command builder rejects injection; continue-on-failure; no live device or package mutation (R-47). |
 | **A4** UI (Debloat → Android) | A3, U10 | Device/user selectors, filters, virtualized list, review/confirm, denylist UX, report, undo. **Done 2026-11-28** — controls, safety acknowledgement, Expert confirmation, batch review/apply/undo and UIA probe; see `PROGRESS_LOG.md`. | Expert typed confirmation; first-run warnings; no live device. |
 | **A5** Backup/restore/log/export | A4 | Pre-apply snapshot, restore, append-only log, selection export/import (UAD-compatible). **Done 2026-11-28** — snapshot JSON, restore mapping, hashed rotated log, text/JSON selection and Recommended preset. | Snapshot restore verified with fakes; no personal data in logs. |
-| **A6** Multi-user/device/wireless | A5 | Profiles, multiple devices, `adb pair/connect` UI, health pre-check. | Private-IP validation; no cross-device actions. |
+| **A6** Multi-user/device/wireless | A5 | Profiles, multiple devices, `adb pair/connect` UI, health pre-check. **Done 2026-11-28** — private-IP/serial guards, per-device/user state, health display and 339 tests. | Private-IP validation; no cross-device actions; no live phone. |
 | **A7** Tests | A6 | Parsers, state, denylist, undo inverse, snapshots, signature check, parity. | All green; no real device. |
 
 **Wave gate:** safety checklist; typed ADB only; snapshot/undo proven; reference parity map.

@@ -442,3 +442,22 @@ UAD text and FPM JSON selection portability and the Recommended preset are imple
 **Not checked:** no live Android snapshot/restore or real action log was exercised; only disposable test paths were used.
 
 Next card: **A6** (Android multi-user, multi-device and wireless).
+
+## 2026-11-28 — A6 complete (multi-user, multi-device, wireless)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Multi-user/device state | `AndroidDebloatViewModel` loads users with the selected device and `AndroidPackageViewModel.SetDevice` resets package state for that one device/user pair | no cross-device package state |
+| Wireless ADB | typed `PairWireless`, `ConnectWireless`, `DisconnectWireless` commands use private IPv4 validation, numeric ports and a 6-digit pairing code | private targets only; bad serial/host/code rejected |
+| Disconnect guard | disconnect is allowed only for a selected wireless device | USB selections are not passed to `adb disconnect` |
+| Health pre-check | selected-device battery query plus a 30% warning and connection/authorization status; missing unlock evidence is labelled unavailable | no fabricated unlock state |
+| Tests | `PackageCommandTests` adds battery/health and wireless serial coverage | **339 passed**, 0 failed |
+| Build/static/UI | solution build, lint, contrast, IconGen and Android UIA probe | 0/0 build; lint 367; contrast OK; 113 icons up to date; NoDevice probe exit 0 |
+
+**A6 acceptance:** profiles and device selectors remain scoped to one selected device/user; wireless
+pair/connect/disconnect UI uses typed validation; device health pre-check shows real battery data and
+honest unavailable unlock evidence. No cross-device apply path or live phone mutation was used.
+
+**Not checked:** no live pairing, wireless connection, device unlock or low-battery ADB run was exercised.
+
+Next card: **A7** (Android tests).

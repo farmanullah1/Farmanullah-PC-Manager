@@ -15,6 +15,10 @@ public enum AdbCommandKind
     DisablePackage,
     EnablePackage,
     RestorePackage,
+    PairWireless,
+    ConnectWireless,
+    DisconnectWireless,
+    GetBattery,
 }
 
 /// <summary>
@@ -26,7 +30,10 @@ public sealed record AdbCommand(
     string Serial = "",
     string PackageId = "",
     int UserId = -1,
-    PackageListFilter ListFilter = PackageListFilter.All)
+    PackageListFilter ListFilter = PackageListFilter.All,
+    string Host = "",
+    int Port = -1,
+    string PairingCode = "")
 {
     public static AdbCommand StartServer() => new(AdbCommandKind.StartServer);
     public static AdbCommand KillServer() => new(AdbCommandKind.KillServer);
@@ -43,6 +50,14 @@ public sealed record AdbCommand(
         new(AdbCommandKind.EnablePackage, serial, packageId, userId);
     public static AdbCommand RestorePackage(string serial, string packageId, int userId) =>
         new(AdbCommandKind.RestorePackage, serial, packageId, userId);
+    public static AdbCommand PairWireless(string host, int port, string pairingCode) =>
+        new(AdbCommandKind.PairWireless, Host: host, Port: port, PairingCode: pairingCode);
+    public static AdbCommand ConnectWireless(string host, int port) =>
+        new(AdbCommandKind.ConnectWireless, Host: host, Port: port);
+    public static AdbCommand DisconnectWireless(string serial) =>
+        new(AdbCommandKind.DisconnectWireless, serial);
+    public static AdbCommand GetBattery(string serial) =>
+        new(AdbCommandKind.GetBattery, serial);
 }
 
 public static class AdbCommandLine
@@ -109,6 +124,19 @@ public static class AdbCommandLine
                     "-s", command.Serial, "shell", "cmd", "package", "install-existing",
                     "--user", command.UserId.ToString(CultureInfo.InvariantCulture), command.PackageId,
                 };
+            case AdbCommandKind.PairWireless:
+                RequireWirelessTarget(command.Host, command.Port);
+                RequirePairingCode(command.PairingCode);
+                return new[] { "pair", $"{command.Host}:{command.Port}", command.PairingCode };
+            case AdbCommandKind.ConnectWireless:
+                RequireWirelessTarget(command.Host, command.Port);
+                return new[] { "connect", $"{command.Host}:{command.Port}" };
+            case AdbCommandKind.DisconnectWireless:
+                RequireSerial(command.Serial);
+                return new[] { "disconnect", command.Serial };
+            case AdbCommandKind.GetBattery:
+                RequireSerial(command.Serial);
+                return new[] { "-s", command.Serial, "shell", "dumpsys", "battery" };
             default:
                 throw new ArgumentOutOfRangeException(nameof(command), "Unsupported ADB command.");
         }
@@ -161,6 +189,48 @@ public static class AdbCommandLine
         if (userId < 0)
         {
             throw new ArgumentException("Android user id must be zero or greater.", "userId");
+        }
+    }
+
+    public static bool IsPrivateIpAddress(string host)
+    {
+        if (!System.Net.IPAddress.TryParse(host, out var address) ||
+            address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
+        {
+            return false;
+        }
+
+        byte[] bytes = address.GetAddressBytes();
+        return bytes[0] == 10 ||
+               (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31) ||
+               (bytes[0] == 192 && bytes[1] == 168);
+    }
+
+    private static void RequireWirelessTarget(string host, int port)
+    {
+        if (!IsPrivateIpAddress(host))
+        {
+            throw new ArgumentException(
+                "Wireless ADB host must be a private IPv4 address.",
+                nameof(host));
+        }
+        if (port < 1 || port > 65535)
+        {
+            throw new ArgumentException(
+                "Wireless ADB port must be between 1 and 65535.",
+                nameof(port));
+        }
+    }
+
+    private static void RequirePairingCode(string pairingCode)
+    {
+        if (string.IsNullOrWhiteSpace(pairingCode) ||
+            pairingCode.Length != 6 ||
+            !pairingCode.All(char.IsDigit))
+        {
+            throw new ArgumentException(
+                "Wireless ADB pairing code must contain exactly 6 digits.",
+                nameof(pairingCode));
         }
     }
 
