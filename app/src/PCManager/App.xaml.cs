@@ -41,6 +41,16 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        if (e.Args.Any(argument =>
+                string.Equals(argument, "--exit", StringComparison.OrdinalIgnoreCase)))
+        {
+            SingleInstanceChannel.TrySendExit(
+                SingleInstanceChannel.BuildPipeName(),
+                TimeSpan.FromSeconds(3));
+            Shutdown(0);
+            return;
+        }
+
         // Own taskbar group / notification identity.
         AppIdentity.ApplyAppUserModelId(AppInfo.AppUserModelId);
 
@@ -104,6 +114,7 @@ public partial class App : Application
         // Hand-off channel: a second launch asks this process to show its window.
         _channel = new SingleInstanceChannel();
         _channel.ShowRequested += OnShowRequested;
+        _channel.ExitRequested += OnExitRequested;
         _channel.Start();
 
         // One motion policy for the whole shell: system settings, app settings, power and RDP.
@@ -385,6 +396,13 @@ public partial class App : Application
 
             ShowMainWindow();
         }));
+    }
+
+    private void OnExitRequested()
+    {
+        _services?.GetService<IAppLogger>()?.Info(
+            "Installer or uninstaller requested a graceful FPM shutdown.");
+        Dispatcher.BeginInvoke(new Action(ExitNow));
     }
 
     /// <summary>Main window close (W3): hide to tray while the toolbar runs, otherwise exit.</summary>

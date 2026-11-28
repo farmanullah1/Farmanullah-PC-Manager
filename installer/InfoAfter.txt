@@ -1,0 +1,7 @@
+FPM is ready.
+
+You can launch FPM from the desktop or Start menu.
+To pin FPM to the taskbar, open Start, right-click FPM, then choose "Pin to taskbar".
+Windows provides no silent, supported taskbar-pinning API for unpackaged desktop apps.
+
+Upgrade and uninstall leave legacy/FPM user data untouched unless you explicitly remove it.

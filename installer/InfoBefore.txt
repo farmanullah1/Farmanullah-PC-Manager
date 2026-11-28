@@ -1,0 +1,7 @@
+FPM is a local-first Windows PC manager.
+
+It includes cleanup tools, Windows and Android debloat controls, and safety checks.
+Apply actions require review and confirmation. FPM does not replace Microsoft PC Manager,
+and it never installs Google platform-tools or changes Android packages without consent.
+
+Continuing installs FPM to Program Files. Existing FPM data is preserved on upgrade.

@@ -5,6 +5,15 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 
 ## [Unreleased]
 
+### Changed
+- **Professional installer R3 (partial)**: Inno Setup 6.7.3 now builds the canonical FPM AppId,
+  administrator/x64 install layout, modern wizard, desktop/Start-menu shortcuts, start and
+  toolbar-only tasks, scan-only scheduled-task option, Run-value cleanup, uninstall data prompt,
+  launch option, portable marker/archive and SHA-256 checksums. The self-contained win-x64 app
+  and helper publish, the installer and portable ZIP compile, and the app's named-pipe `--exit`
+  path was smoke-tested. Clean/silent/upgrade/uninstall and coexistence matrix runs remain
+  unverified on the user's machine.
+
 ### Added
 - **Android test completion (A7)**: the Android suite now includes recorded-device parser fixtures,
   typed-command rejection, state/scanning and batch behavior, denylist and Expert confirmation,

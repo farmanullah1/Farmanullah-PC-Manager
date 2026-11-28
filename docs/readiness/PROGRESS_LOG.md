@@ -481,3 +481,22 @@ network/signature cases use fakes or disposable files.
 physical low-battery/unlocked-device pre-check was exercised.
 
 Next card: **R3** (professional installer).
+
+## 2026-11-28 — R3 partial (professional installer)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Release publish | `tools/build-release.ps1` publishes `FPM.exe` and `FPM.Helper.exe` for `win-x64` self-contained and creates `portable.flag` | app/helper published; not signed |
+| Inno compile | Inno Setup 6.7.3 compiled `FPM-Setup-3.23.3.0.exe` | installer output 379,895,612 bytes |
+| Portable archive | `FPM-portable-3.23.3.0.zip` | archive 360,406,830 bytes |
+| Checksums | `publish/SHA256SUMS.txt` | portable `e62421a4…`; installer `0788aa92…` |
+| Graceful exit | published app launched with `--no-splash`, accepted `--exit` through `FPM.Instance.<SID>`, stopped PID 21272 and did not hit an unrelated process | pass |
+| Silent install | two silent installer attempts returned exit 0 but left no visible `C:\Program Files\FPM` or Add/Remove Programs entry and no setup log | **not proven**; artifact may require interactive elevation/owner execution |
+| Upgrade/uninstall/coexistence | no live Win10/11 matrix, upgrade, uninstall or side-by-side Microsoft PC Manager run | **not executed** |
+| Build/tests/gates | solution build, tests, lint, contrast, IconGen | 0/0 build; 341 tests; lint 367; contrast OK; 113 icons |
+
+**R3 acceptance status:** partial. The script, Inno source, self-contained publish and portable package
+compile; the named-pipe shutdown path is verified. Installer discovery and silent/upgrade/uninstall
+behavior is not marked green until a machine run creates the expected install and registry entries.
+
+Next card: **R5** (README and screenshots); R3 remains open for owner/live matrix verification.

@@ -13,6 +13,7 @@ namespace PCManager.Services;
 public sealed class SingleInstanceChannel : IDisposable
 {
     public const string ShowMessage = "SHOW";
+    public const string ExitMessage = "EXIT";
 
     private readonly string _pipeName;
     private readonly object _gate = new();
@@ -27,6 +28,7 @@ public sealed class SingleInstanceChannel : IDisposable
     public SingleInstanceChannel(string pipeName) => _pipeName = pipeName;
 
     public event Action? ShowRequested;
+    public event Action? ExitRequested;
 
     public string PipeName => _pipeName;
 
@@ -81,6 +83,25 @@ public sealed class SingleInstanceChannel : IDisposable
         }
     }
 
+    public static bool TrySendExit(string pipeName, TimeSpan timeout)
+    {
+        try
+        {
+            using var client = new NamedPipeClientStream(
+                ".", pipeName, PipeDirection.Out, PipeOptions.Asynchronous);
+
+            client.Connect((int)Math.Max(100, timeout.TotalMilliseconds));
+
+            using var writer = new StreamWriter(client, new UTF8Encoding(false)) { AutoFlush = true };
+            writer.WriteLine(ExitMessage);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
     private async Task ListenAsync(CancellationToken token)
     {
         while (!token.IsCancellationRequested)
@@ -107,6 +128,10 @@ public sealed class SingleInstanceChannel : IDisposable
                 if (string.Equals(message, ShowMessage, StringComparison.Ordinal))
                 {
                     ShowRequested?.Invoke();
+                }
+                else if (string.Equals(message, ExitMessage, StringComparison.Ordinal))
+                {
+                    ExitRequested?.Invoke();
                 }
             }
             catch (OperationCanceledException)

@@ -2,6 +2,7 @@
 [Bb]in/
 [Oo]bj/
 app/out/
+publish/
 *.binlog
 TestResults/
 
