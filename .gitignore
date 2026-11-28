@@ -1,47 +1,25 @@
-# FPM .gitignore
-# Keep source, project files, docs, assets, installer scripts and small fixtures tracked.
-
-# Build and test output
+# Build output
 [Bb]in/
 [Oo]bj/
-[Oo]ut/
-publish/
-dist/
-artifacts/
-TestResults/
-coverage/
-*.trx
 *.binlog
-*.msbuild.log
+TestResults/
 
-
-# IDE and editor files
+# IDE
 .vs/
 .vscode/
-.idea/
 *.user
 *.suo
-*.userprefs
-*.swp
-*.swo
-*~
 
-# Packages
+# Packages and release artifacts
 packages/
 *.nupkg
 *.snupkg
-
-# Installer and release output
 installer/Output/
 *.msi
 *.msix
 *.msixbundle
 *.appx
 *.appxbundle
-FPM-Setup-*.exe
-*.zip
-Microsoft PC Manager Installer.exe
-microsoft-pc-manager-3-23-3-0.msixbundle
 
 # Secrets and signing material
 .env
@@ -50,69 +28,47 @@ microsoft-pc-manager-3-23-3-0.msixbundle
 *.pfx
 *.p12
 *.snk
-*.pvk
 *.key
 *.pem
 secrets.json
-appsettings.*.local.json
-*.publishsettings
-local.properties
 
-# Local app data and logs
-/settings.json
-cleanup_log.txt
-debloat_log.txt
-android_actions.log
-/journal/
-/backups/
-/quarantine/
-/Data/
-*.wsb
+# Runtime data
 *.log
 *.tmp
 *.pid
 
-# Third-party reference material (read-only, never redistributed)
+# Read-only references
 reference/
-refs/
 platform-tools/
 
-# Local investigation and agent-tool files
-.craft/
+# Agent and planning files
+AGENT_STATE.md
+BUILD_STATUS.md
+PROJECT_SPEC.md
+REA_REFERENCE_AUDIT.md
+FPM_Master_*.md
+FPM_Master_Prompt*.md
+FPM_FreeBuff_*.md
+Farmanullah_PC_Manager_Master_Prompt*.md
+*_Master_Prompt*.md
+docs/freebuff/
+.claude/
+.cursor/
+.windsurf/
+.antigravity/
+.freebuff/
+investigation.cany/
+capture/
+inbox/
 craft.json
 feed.json
 transcript.json
 usage.json
-build-activity.log
 installer_types.txt
-capture/
-inbox/
-investigation.cany/
-.antigravity/
-.freebuff/
-.omnirush/
-.cursor/
-.windsurf/
-.codebuff/
-.claude/
-.gemini/
-*.agent.log
 
-# Local planning, prompt and handoff documents (not public)
-/AGENT_STATE.md
-/BUILD_STATUS.md
-/FPM_Master_*.md
-/FPM_FreeBuff_*.md
-/*_MASTER_PROMPT*.md
-/*_Master_Prompt*.md
-/PROJECT_SPEC.md
-/REA_REFERENCE_AUDIT.md
-docs/freebuff/
+# Local installers
+*.exe
 
 # OS noise
 .DS_Store
 Thumbs.db
-Desktop.ini
-*.orig
-*.rej
-*.bak

@@ -6,6 +6,14 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Added
+- **Android backup, restore, log and selection portability (A5)**: package application now creates
+  an automatic per-device/per-user JSON snapshot, stores it under `%LOCALAPPDATA%\FPM\android\backups`,
+  and logs package actions in a rotated `android_actions.log` using a SHA-256 serial hash, model,
+  user, action and result. The Android tab can restore a snapshot, select Recommended-tier packages,
+  export/import UAD text and FPM JSON selections, ignore unknown imported ids and open the action
+  log. No personal serial is written to the log.
+
+### Added
 - **Android package engine (A3)**: typed package enumeration now joins UAD metadata with
   enabled/disabled/system state for a device and Android user. The engine exposes uninstall,
   disable, restore and enable actions over the closed ADB argument builder; unsafe/protected

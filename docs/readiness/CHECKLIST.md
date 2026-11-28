@@ -35,7 +35,7 @@ working time for one agent session, not calendar time. `☑` = verified, `☐` =
 | 2.3 | Identify prerequisites/blockers per wave | 0.5 h | Wave table has entry conditions | ☑ |
 | 2.4 | Ask the owner the seven open questions | 0.5 h | Answers recorded in `DECISIONS.md` | ☑ — D-016…D-021; Q-07 answered by default |
 | 2.5 | Approve the wave plan | 0.25 h | G-2 recorded | ☑ — D-016 execution order |
-| 2.6 | Execute wave 1, one card per session | 20–30 h | Each card's DoD + acceptance evidenced | ☐ (R2, R4, W1–W5, T1, D1–D5, A1–A4 done; T2 unprivileged done, LHM/helper pending owner; U7 reduced-motion capture + cancel open; next A5) |
+| 2.6 | Execute wave 1, one card per session | 20–30 h | Each card's DoD + acceptance evidenced | ☐ (R2, R4, W1–W5, T1, D1–D5, A1–A5 done; T2 unprivileged done, LHM/helper pending owner; U7 reduced-motion capture + cancel open; next A6) |
 | 2.7 | D4 advanced debloat | 6–8 h | Typed target, hive unload, presets, drift, CLI, tests, probe, docs | ☑ 2026-11-28 — 260 tests, probe exit 0, build 0/0, lint 367, contrast OK; live UAC run not approved (R-33) |
 | 2.8 | D5 Windows debloat tests | 4–6 h | Schema, revert/detect, gating, conflicts, journal, denylist and parity all covered; no live registry touched | ☑ 2026-11-28 — 267 tests, build 0/0, lint 367, contrast OK; dry-run 0 files; 16/16 exclusions; live UAC gaps remain (R-28/R-33) |
 | 2.9 | A1 ADB service | 4–6 h | Locate/consent/download/verify adb, devices parsing, onboarding, device info, 2 s visible polling; unsigned adb rejected; no bundling | ☑ 2026-11-28 — 287 tests (20 A1), build 0/0, lint 367, contrast OK, IconGen 113; UIA probe exit 0 with real signed adb + NoDevice; no physical phone/live download (R-38/R-39) |

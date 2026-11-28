@@ -423,3 +423,22 @@ Next card: **A4** (Android package UI). No owner-only blocker.
 **Not checked:** real 360/560/1280 captures, both-theme visual review and live device package apply/undo remain unverified (R-45/R-47). A5 owns persistent snapshot/log/export behavior.
 
 Next card: **A5** (Android backup, restore, log and export/import). No owner-only blocker.
+
+## 2026-11-28 — A5 complete (Android backup, restore, log and selection portability)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Snapshot store | `AndroidBackupService` creates `%LOCALAPPDATA%\FPM\android\backups\<serial-hash>_<user>_<timestamp>.json` from the latest typed package scan | stores package id + enabled/disabled/uninstalled state |
+| Restore | restore maps snapshot states to Enable/Disable/Restore and uses `IPackageEngine` batch verification | reports OK, Already, Failed and Blocked |
+| Action log | append-only `android_actions.log` with 5 MB rotation | serial SHA-256, model, user, package, action and result; no raw serial |
+| Selection portability | `.txt` UAD-compatible export/import and FPM JSON export/import | unknown ids are reported and ignored |
+| Recommended preset | Android package UI selects only `Recommended` metadata rows | still requires review and final confirmation |
+| Tests | `AndroidBackupServiceTests` covers snapshot JSON, restore inverse mapping, text round-trip, unknown ids and hashed logs | 328 tests total, 0 failed |
+| Build/static/UI | solution build, lint, contrast, IconGen and Android UIA probe | 0/0 build; lint 367; contrast OK; icons up to date; A5 controls found |
+
+**A5 acceptance:** automatic snapshot creation, snapshot restore, privacy-safe append-only log,
+UAD text and FPM JSON selection portability and the Recommended preset are implemented.
+
+**Not checked:** no live Android snapshot/restore or real action log was exercised; only disposable test paths were used.
+
+Next card: **A6** (Android multi-user, multi-device and wireless).

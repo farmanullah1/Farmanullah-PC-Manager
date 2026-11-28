@@ -142,7 +142,15 @@ try {
         "Review Android package batch",
         "Apply Android package batch",
         "Undo Android package batch",
-        "Android package batch result")) {
+        "Android package batch result",
+        "Apply Android recommended preset",
+        "Export Android selection text",
+        "Export Android selection JSON",
+        "Import Android package selection",
+        "Open Android action log",
+        "Android package snapshots",
+        "Create Android package snapshot",
+        "Restore Android package snapshot")) {
         if (-not (Find-Named $window $name)) { "missing Android control: $name"; exit 7 }
         "control present: $name"
     }

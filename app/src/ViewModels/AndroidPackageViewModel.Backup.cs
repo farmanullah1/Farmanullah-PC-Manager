@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using Microsoft.Win32;
 using PCManager.Core;
@@ -9,6 +10,39 @@ namespace PCManager.ViewModels;
 
 public sealed partial class AndroidPackageViewModel
 {
+    private void SelectAll()
+    {
+        foreach (AndroidPackageRow row in VisiblePackages)
+        {
+            row.IsSelected = true;
+        }
+        UpdateSelection();
+    }
+
+    private void Clear()
+    {
+        foreach (AndroidPackageRow row in Packages)
+        {
+            row.IsSelected = false;
+        }
+        UpdateSelection();
+    }
+
+    private void Invert()
+    {
+        foreach (AndroidPackageRow row in VisiblePackages)
+        {
+            row.IsSelected = !row.IsSelected;
+        }
+        UpdateSelection();
+    }
+
+    private void UpdateSelection()
+    {
+        HasSelection = Packages.Any(row => row.IsSelected);
+        RefreshCommands();
+    }
+
     private void RecommendedPreset()
     {
         foreach (AndroidPackageRow row in Packages)

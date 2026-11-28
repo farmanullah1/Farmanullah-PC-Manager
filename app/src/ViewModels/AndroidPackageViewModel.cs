@@ -12,6 +12,8 @@ public sealed partial class AndroidPackageViewModel : ObservableObject
     private readonly IPackageEngine _engine;
     private readonly IUserConfirmationService _confirmation;
     private readonly ISettingsService _settings;
+    private readonly IAndroidBackupService _backup;
+    private readonly IPackageListProvider _lists;
     private AdbDevice? _device;
     private PackageScan? _scan;
     private IReadOnlyList<PackageActionResult> _lastApplied =
@@ -20,11 +22,15 @@ public sealed partial class AndroidPackageViewModel : ObservableObject
     public AndroidPackageViewModel(
         IPackageEngine engine,
         IUserConfirmationService confirmation,
-        ISettingsService settings)
+        ISettingsService settings,
+        IAndroidBackupService backup,
+        IPackageListProvider lists)
     {
         _engine = engine;
         _confirmation = confirmation;
         _settings = settings;
+        _backup = backup;
+        _lists = lists;
 
         RefreshCommand = new AsyncRelayCommand(RefreshAsync, () => CanRefresh);
         ReviewCommand = new RelayCommand(Review, () => HasSelection);
@@ -37,8 +43,18 @@ public sealed partial class AndroidPackageViewModel : ObservableObject
         {
             SafetyAcknowledged = true;
         });
+        RecommendedPresetCommand = new RelayCommand(RecommendedPreset);
+        ExportTextCommand = new RelayCommand(ExportText);
+        ExportJsonCommand = new RelayCommand(ExportJson);
+        ImportSelectionCommand = new RelayCommand(ImportSelection);
+        CreateSnapshotCommand = new AsyncRelayCommand(CreateSnapshotAsync,
+            () => _device is { IsUsable: true } && SelectedUser is not null && _scan is not null);
+        RestoreSnapshotCommand = new AsyncRelayCommand(RestoreSnapshotAsync,
+            () => SelectedSnapshot is not null);
+        OpenLogCommand = new RelayCommand(OpenLog);
 
         SafetyAcknowledged = settings.Current.AndroidSafetyAcknowledged;
+        RefreshSnapshots();
     }
 
     public ObservableCollection<AdbUser> Users { get; } = new();
@@ -50,6 +66,7 @@ public sealed partial class AndroidPackageViewModel : ObservableObject
         new(new[] { "All", "Recommended", "Advanced", "Expert", "Unsafe", "Unlisted" });
     public ObservableCollection<string> StateFilters { get; } =
         new(new[] { "All", "Enabled", "Disabled", "Uninstalled" });
+    public ObservableCollection<AndroidPackageSnapshot> Snapshots { get; } = new();
 
     public AsyncRelayCommand RefreshCommand { get; }
     public RelayCommand ReviewCommand { get; }
@@ -59,6 +76,13 @@ public sealed partial class AndroidPackageViewModel : ObservableObject
     public RelayCommand ClearCommand { get; }
     public RelayCommand InvertCommand { get; }
     public RelayCommand AcknowledgeSafetyCommand { get; }
+    public RelayCommand RecommendedPresetCommand { get; }
+    public RelayCommand ExportTextCommand { get; }
+    public RelayCommand ExportJsonCommand { get; }
+    public RelayCommand ImportSelectionCommand { get; }
+    public AsyncRelayCommand CreateSnapshotCommand { get; }
+    public AsyncRelayCommand RestoreSnapshotCommand { get; }
+    public RelayCommand OpenLogCommand { get; }
 
     [ObservableProperty] private AdbUser? _selectedUser;
     [ObservableProperty] private AndroidPackageRow? _focusedPackage;
@@ -77,6 +101,7 @@ public sealed partial class AndroidPackageViewModel : ObservableObject
     [ObservableProperty] private string _statusText = "Packages unavailable.";
     [ObservableProperty] private string _reviewText = "Select packages, then review.";
     [ObservableProperty] private string _resultText = "No package actions have run.";
+    [ObservableProperty] private AndroidPackageSnapshot? _selectedSnapshot;
 
     private bool CanRefresh =>
         SafetyAcknowledged && _device is { IsUsable: true } &&
@@ -360,39 +385,6 @@ public sealed partial class AndroidPackageViewModel : ObservableObject
                 ExpertConfirmation: ExpertConfirmation));
         ResultText = "Undo: " + result.Message;
         await RefreshAsync();
-    }
-
-    private void SelectAll()
-    {
-        foreach (AndroidPackageRow row in VisiblePackages)
-        {
-            row.IsSelected = true;
-        }
-        UpdateSelection();
-    }
-
-    private void Clear()
-    {
-        foreach (AndroidPackageRow row in Packages)
-        {
-            row.IsSelected = false;
-        }
-        UpdateSelection();
-    }
-
-    private void Invert()
-    {
-        foreach (AndroidPackageRow row in VisiblePackages)
-        {
-            row.IsSelected = !row.IsSelected;
-        }
-        UpdateSelection();
-    }
-
-    private void UpdateSelection()
-    {
-        HasSelection = Packages.Any(row => row.IsSelected);
-        RefreshCommands();
     }
 
     private void RefreshCommands()

@@ -97,6 +97,10 @@ public static class ServiceCollectionExtensions
         // A3: read-only package state, typed actions, sequential batches and verification.
         services.AddSingleton<PCManager.Services.Android.IPackageEngine,
             PCManager.Services.Android.PackageEngine>();
+
+        // A5: Android snapshots, action log and selection import/export.
+        services.AddSingleton<PCManager.Services.Android.IAndroidBackupService,
+            PCManager.Services.Android.AndroidBackupService>();
         services.AddSingleton<PCManager.Services.Android.IPackageEngine,
             PCManager.Services.Android.PackageEngine>();
 

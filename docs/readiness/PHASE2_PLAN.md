@@ -9,8 +9,8 @@ everything they do not cover. No card is started before its dependencies and ent
 Done and committed: **G0, R1, R2, R4, U1–U6, W1–W5, T1, D1–D5, A1–A4** (A4 is the current card;
 see `PROGRESS_LOG.md`). T2 is partial: the unprivileged path ships, LHM/helper awaits D-043. U7's
 reduced-motion capture and cancel are still open.
-Next by the approved order: **A5** (Android backup, restore, log and export/import). Owner-gated: D-043 (LHM), Q-05 (push/signing).
-Not started: U7–U12, T2 helper/LHM, T3–T4, A5–A7, R3, R5–R6, and the v7-only backlog in §9.
+Next by the approved order: **A6** (Android multi-user, multi-device and wireless). Owner-gated: D-043 (LHM), Q-05 (push/signing).
+Not started: U7–U12, T2 helper/LHM, T3–T4, A6–A7, R3, R5–R6, and the v7-only backlog in §9.
 
 ## 2. Wave 0 — release foundations (est. 8–12 h)
 
@@ -81,7 +81,7 @@ memory overhead recorded in `BUILD_STATUS.md`.
 | **A2** Package lists | A1 | Typed model + schema + validator for `uad_lists.json`; user-initiated update with diff/hash. **Done 2026-11-28 (`e33b5cb`)** — embedded 2,400/2,394/6, SHA-256; fake-source update/cache/diff; 15 tests; see `PROGRESS_LOG.md`. | Schema tests; embedded fallback; no live upstream fetch (R-44). |
 | **A3** Package engine | A2 | State computation, typed commands, batch results, verify, dependency warnings. **Done 2026-11-28 (`3946e1d` + `0c50c62`)** — 19 A3 tests, fake executor, denylist/Expert gate, disconnect stop; see `PROGRESS_LOG.md`. | Command builder rejects injection; continue-on-failure; no live device or package mutation (R-47). |
 | **A4** UI (Debloat → Android) | A3, U10 | Device/user selectors, filters, virtualized list, review/confirm, denylist UX, report, undo. **Done 2026-11-28** — controls, safety acknowledgement, Expert confirmation, batch review/apply/undo and UIA probe; see `PROGRESS_LOG.md`. | Expert typed confirmation; first-run warnings; no live device. |
-| **A5** Backup/restore/log/export | A4 | Pre-apply snapshot, restore, append-only log, selection export/import (UAD-compatible). | Snapshot restore verified with fakes; no personal data in logs. |
+| **A5** Backup/restore/log/export | A4 | Pre-apply snapshot, restore, append-only log, selection export/import (UAD-compatible). **Done 2026-11-28** — snapshot JSON, restore mapping, hashed rotated log, text/JSON selection and Recommended preset. | Snapshot restore verified with fakes; no personal data in logs. |
 | **A6** Multi-user/device/wireless | A5 | Profiles, multiple devices, `adb pair/connect` UI, health pre-check. | Private-IP validation; no cross-device actions. |
 | **A7** Tests | A6 | Parsers, state, denylist, undo inverse, snapshots, signature check, parity. | All green; no real device. |
 
