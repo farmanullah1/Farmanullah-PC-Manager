@@ -187,10 +187,14 @@
                     </Border>
 
                     <!-- Running -->
-                    <Border Style="{StaticResource Card}" Padding="{StaticResource Thickness.4}"
+                    <Border x:Name="DebloatRunningCard" Style="{StaticResource Card}" Padding="{StaticResource Thickness.4}"
                             Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibility}}">
                         <StackPanel>
-                            <TextBlock Text="Working…" FontSize="16" FontWeight="SemiBold" />
+                            <StackPanel Orientation="Horizontal">
+                                <controls:Icon3D x:Name="DebloatRunningIcon" Key="Scan" Size="20"
+                                                 Margin="{StaticResource Thickness.1}" />
+                                <TextBlock Text="Working…" FontSize="16" FontWeight="SemiBold" />
+                            </StackPanel>
                             <TextBlock Text="{Binding RunningText}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
                             <ProgressBar Style="{StaticResource ThinProgress}" IsIndeterminate="True"
                                          Margin="{StaticResource Thickness.2}" />

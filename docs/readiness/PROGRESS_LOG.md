@@ -558,3 +558,19 @@ topics were changed externally without the owner's explicit confirmation.
 
 **U7 acceptance status:** partial. Cancel, settle and state behavior are implemented and tested;
 live reduced-motion/failure/cancel captures remain open.
+
+## 2026-11-28 — U8 partial (real-state motion)
+
+| Step | Evidence | Result |
+|---|---|---|
+| Cleanup scan | `StorageView` observes `StorageViewModel.IsBusy`, shimmers the real Scan icon/status and stops it when busy ends | no fabricated progress |
+| Cleanup rows | `CleanupItems.CollectionChanged` staggers the first 12 rendered containers using the U4 motion kit | real collection refresh only |
+| Debloat running | `DebloatView` observes `IsRunning`, fades/shimmers the running card/icon and restores static state after completion | apply/detect/undo states |
+| Motion guard | existing U4 policy keeps Reduced at fades and None/Reduced removes transforms | no layout geometry animation |
+| Build/tests/gates | solution build/test/lint/contrast/IconGen | 0/0; 343 tests; lint 367; contrast OK; icons up to date |
+| Not captured | live Cleanup execute dissolve, toast/dialog, sensor cross-fade and Debloat per-item progress | not claimed |
+
+**U8 acceptance status:** partial. Real busy/loading and stagger motion is wired; the broad
+card-specific visual matrix remains open for later runtime work.
+
+Next card: **U9** (scrolling and navigation).

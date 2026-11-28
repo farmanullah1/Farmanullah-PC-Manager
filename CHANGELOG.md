@@ -6,6 +6,13 @@ follow the audit legend: **[DONE]**, **[PARTIAL]**, **[MISSING]**.
 ## [Unreleased]
 
 ### Changed
+- **Other motion U8 (partial)**: Storage and Debloat now start motion only while real work is active:
+  the Cleanup Scan icon/status shimmer during busy scans, Cleanup rows stagger on collection
+  refresh (maximum 12), and the Debloat running card/icon fade/shimmer during apply/detect/undo.
+  Reduced/None motion falls back to final states through the existing motion policy. Live scan,
+  cleanup-dissolve and toast/dialog capture remain open.
+
+### Changed
 - **Boost animation U7 (partial)**: the shared Boost host now exposes Cancel while
   Measuring/Working, both Home and the toolbar bind the same cancel command, and the coordinator
   supports cancellation plus a 2-second return from Completed to Idle. Reduced-motion ring/check

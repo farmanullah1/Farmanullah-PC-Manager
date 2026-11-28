@@ -31,7 +31,7 @@
             </Grid>
 
             <!-- System drive -->
-            <Border Style="{StaticResource Card}" Padding="12">
+            <Border x:Name="CleanupCenterCard" Style="{StaticResource Card}" Padding="12">
                 <StackPanel>
                     <Grid>
                         <StackPanel Orientation="Horizontal">
@@ -105,7 +105,7 @@
                 <StackPanel>
                     <StackPanel Margin="0,0,0,6">
                         <StackPanel Orientation="Horizontal">
-                            <controls:Icon3D Key="Scan" Size="22" Margin="{StaticResource Thickness.1}" />
+                            <controls:Icon3D x:Name="CleanupScanIcon" Key="Scan" Size="22" Margin="{StaticResource Thickness.1}" />
                             <TextBlock Text="Cleanup Center" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
                         </StackPanel>
                         <TextBlock Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="0,2,0,0"
@@ -152,7 +152,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <ItemsControl ItemsSource="{Binding CleanupItems}" Style="{StaticResource CardList}">
+                    <ItemsControl x:Name="CleanupItemsList" ItemsSource="{Binding CleanupItems}" Style="{StaticResource CardList}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource RowCard}" Padding="10" Margin="0,0,0,6">
@@ -570,7 +570,7 @@
                     </StackPanel>
             </Border>
 
-            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource CaptionText}" Margin="0,4,0,0" />
+            <TextBlock x:Name="StorageStatusText" Text="{Binding StatusMessage}" Style="{StaticResource CaptionText}" Margin="0,4,0,0" />
 
         </StackPanel>
         </Grid>
